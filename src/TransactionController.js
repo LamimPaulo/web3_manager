@@ -12,7 +12,9 @@ async function signTx(contractAbi, contractAddress, sender, pk, receiver, amount
         "pending"
     );
 
-    const privateKey = Buffer(pk, "hex");
+    const privKey = pk.substr(2)
+
+    const privateKey = Buffer(privKey, "hex");
 
     txObject.nonce = web3.utils.toHex(result);
     txObject.gasLimit = web3.utils.toHex(30000000);

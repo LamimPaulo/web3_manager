@@ -18,6 +18,10 @@
     "dotenv": "^10.0.0",
     "ethereumjs-tx": "^2.1.2",
     "express": "^4.17.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
+    "sequelize": "*",
+    "sequelize-cli": "^6.3.0",
     "web3": "^1.6.0"
   },
   "devDependencies": {

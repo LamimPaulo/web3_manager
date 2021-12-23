@@ -1,6 +1,7 @@
 import Web3 from "web3";
 import Wallet from "../models/Wallet.js";
 import SystemWallet from "../models/SystemWallet.js";
+// import Https from "Https"`
 
 class TransactionController {
 
@@ -144,6 +145,28 @@ class TransactionController {
 
             console.log(responseData)
             return responseData
+    }
+
+    async checkTransactions() {
+        const pk = await SystemWallet.findOne(
+            {
+                where: {
+                    name: 'master'
+                }
+            }
+        );
+        //const https = new Https()
+        const options = {
+            hostname: "https://api-testnet.bscscan.com",
+            port: 443,
+            path: "/api?module=account&action=tokentx&address=.'+pk.address+'&startblock=0&endblock=2500000&sort=asc&apikey='+process.env.BSC_TOKEN"
+        }
+
+
+        var web3 = new Web3(process.env.PROVIDER_URL);
+        web3.defaultAccount = pk.address
+
+        return await web3.eth.subscribe()
     }
 }
 

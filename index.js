@@ -92,6 +92,17 @@ app.post('/send-gas', async (req, res) => {
     
 });
 
+app.post('/sync', async (req, res) => {
+    return await transactionController.checkTransactions()
+    .then((sign) => {
+        return res.send(sign);
+    }).catch((error) => {
+        console.log(error)
+        return res.status(400).send(error.message);
+    })
+    
+});
+
 app.listen(process.env.PORT, () =>
     console.log(`App listening on port ${process.env.PORT}!`),
 );

@@ -83,6 +83,40 @@ class TransactionController {
         return responseData
     }
 
+    async TransferTo(target_address, amount) {
+        const contractAbi = JSON.parse(process.env.USDT_ABI_ENCODED);
+        const contractAddress = process.env.USDT_ADDRESS;
+        const pk = await SystemWallet.findOne({
+            where: {
+                name: 'master',
+            }
+        });
+
+        var web3 = new Web3(process.env.PROVIDER_URL);
+        web3.defaultAccount = pk.address
+
+        const myContract = new web3.eth.Contract(contractAbi, contractAddress);
+
+        const contractData = await myContract.methods.transfer(
+                target_address,
+                web3.utils.toHex(web3.utils.toWei(amount, 'ether')),
+            ).encodeABI();
+
+        const rawTransaction = {
+            from: pk.address,
+            to: contractAddress,
+            gas: web3.utils.toHex(5000000),
+            gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
+            data: contractData,
+        }
+
+        const signed = await web3.eth.accounts.signTransaction(rawTransaction, pk.priv)
+        const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
+
+        console.log(responseData)
+        return {ok: true, data: responseData}
+    }
+
     async StartApprove(client_address) {
         const contractAbi = JSON.parse(process.env.USDT_ABI_ENCODED);
         const contractAddress = process.env.USDT_ADDRESS;

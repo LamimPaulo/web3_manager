@@ -68,6 +68,16 @@ app.post('/send-from', async (req, res) => {
     })
 });
 
+app.post('/send-to', async (req, res) => {
+    const {target_address, amount} = req.body;
+    return await transactionController.TransferTo(target_address, amount)
+    .then((sign) => {
+        return res.send(sign);
+    }).catch((error) => {
+        return res.status(400).send({ok: false, data: error.message});
+    })
+});
+
 app.post('/start-allowance', async (req, res) => {
     const {client_address} = req.body;
     return await transactionController.StartApprove(client_address)

@@ -29,6 +29,17 @@ app.post('/getbalance',async (req, res) => {
   });
 });
 
+app.post('/getintransactions',async (req, res) => {
+  const { address } = req.body;
+  const data = await walletController.getInTransactions(address)
+  return res.send({
+    status: 'ok',
+    message: 'success',
+    count: data.length,
+    data: data
+  });
+});
+
 app.post('/system/balance',async (req, res) => {
   const { address } = req.body;
   return res.send({

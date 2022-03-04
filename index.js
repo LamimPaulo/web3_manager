@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import signTx from './src/app/controllers/TransactionController.js';
 import TransactionController from './src/app/controllers/TransactionController.js';
+import NftController from './src/app/controllers/NftController.js';
 import WalletController from './src/app/controllers/WalletController.js';
 import express from 'express';
 import bodyParser from "body-parser";
@@ -8,6 +9,7 @@ import database from './src/database/index.js';
 
 const transactionController = new TransactionController();
 const walletController = new WalletController();
+const nftController = new NftController();
 
 const app = express();
 
@@ -120,8 +122,50 @@ app.post('/sync', async (req, res) => {
     }).catch((error) => {
         console.log(error)
         return res.status(400).send(error.message);
-    })
-    
+    }) 
+});
+
+app.post('/nft/safe-mint', async (req, res) => {
+  const { uri } = req.body
+    return await nftController.safeMint(uri)
+    .then((data) => {
+        return res.send(data);
+    }).catch((error) => {
+        console.log(error)
+        return res.status(400).send(error.message);
+    }) 
+});
+
+app.post('/nft/fetch', async (req, res) => {
+  const { id } = req.body
+    return await nftController.fetchId(id)
+    .then((data) => {
+        return res.send(data);
+    }).catch((error) => {
+        console.log(error)
+        return res.status(400).send(error.message);
+    }) 
+});
+
+app.get('/nft/sysbalance', async (req, res) => {
+    return await nftController.systemBalance()
+    .then((data) => {
+        return res.send(data);
+    }).catch((error) => {
+        console.log(error)
+        return res.status(400).send(error.message);
+    }) 
+});
+
+app.post('/nft/abi', async (req, res) => {
+//   const { uri } = req.body
+    return await nftController.contractAbi()
+    .then((data) => {
+        return res.send(data);
+    }).catch((error) => {
+        console.log(error)
+        return res.status(400).send(error.message);
+    }) 
 });
 
 app.listen(process.env.PORT, () =>

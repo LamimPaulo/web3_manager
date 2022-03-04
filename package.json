@@ -13,6 +13,7 @@
   "dependencies": {
     "@ethereumjs/common": "^2.5.0",
     "@ethereumjs/tx": "^3.3.2",
+    "@openzeppelin/contracts": "^4.5.0",
     "axios": "^0.24.0",
     "bignumber": "^1.1.0",
     "body-parser": "^1.19.0",
@@ -27,6 +28,7 @@
     "web3": "^1.6.0"
   },
   "devDependencies": {
+    "hardhat": "^2.8.4",
     "nodemon": "^2.0.13"
   }
 }

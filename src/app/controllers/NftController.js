@@ -61,8 +61,9 @@ class NftController {
         return data
     }
 
-    async withdrawalToken() {
+    async withdrawalToken(token_id, address) {
         const contractAbi = JSON.parse(process.env.NFT_CONTRACT_ABI);
+        // const contractAbi = await this.contractAbi(process.env.NFT_CONTRACT_ABI);
         const contractAddress = process.env.NFT_CONTRACT_ADDRESS;
         const pk = await SystemWallet.findOne({
             where: {
@@ -75,7 +76,7 @@ class NftController {
 
         const myContract = new web3.eth.Contract(contractAbi, contractAddress);
 
-        const contractData = await myContract.methods.transferFrom(pk.address, uri).encodeABI();
+        const contractData = await myContract.methods.transferFrom(pk.address, address, token_id).encodeABI();
 
         const rawTransaction = {
             from: pk.address,
@@ -88,7 +89,6 @@ class NftController {
         const signed = await web3.eth.accounts.signTransaction(rawTransaction, pk.priv)
         const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
 
-        console.log(responseData)
         return responseData
     }
 
@@ -123,9 +123,9 @@ class NftController {
         return responseData
     }
 
-    async contractAbi() {
+    async contractAbi(address) {
 
-        const response = await fetch(process.env.BSC_ADDRESS+'api?module=contract&action=getabi&address=0x7F19b3dEDAC275773144D58216F2785bF4CAE630&apikey=8Z5ZEBBPEIFWWJA54XM24IQNSXZFC8ZDUS', {
+        const response = await fetch(process.env.BSC_ADDRESS+'api?module=contract&action=getabi&address='+address+'&apikey=8Z5ZEBBPEIFWWJA54XM24IQNSXZFC8ZDUS', {
             method: 'get',
             headers: {'Content-Type': 'application/json'}
             });

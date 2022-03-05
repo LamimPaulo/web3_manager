@@ -5,10 +5,15 @@ import SystemWallet from "../models/SystemWallet.js";
 
 class TransactionController {
 
-    async signTx(sender, receiver, amount) {
+    async signTx(sender, receiver, amount, coin = 'USDT') {
         try {
-            const contractAbi = JSON.parse(process.env.USDT_ABI_ENCODED);
-            const contractAddress = process.env.USDT_ADDRESS;
+            if(coin == 'USDT'){
+                const contractAbi = JSON.parse(process.env.USDT_ABI_ENCODED);
+                const contractAddress = process.env.USDT_ADDRESS;
+            } else if(coin == 'BTCC'){
+                const contractAbi = JSON.parse(process.env.BTCC_CONTRACT_ABI);
+                const contractAddress = process.env.BTCC_CONTRACT_ADDRESS;
+            }
             const pk = await Wallet.findAll({
                 where: {
                     address: sender,
@@ -50,9 +55,18 @@ class TransactionController {
         }
     }
 
-    async TransferFrom(client_address, amount) {
-        const contractAbi = JSON.parse(process.env.USDT_ABI_ENCODED);
-        const contractAddress = process.env.USDT_ADDRESS;
+    async TransferFrom(client_address, amount, coin = 'USDT') {
+        // const contractAbi = JSON.parse(process.env.USDT_ABI_ENCODED);
+        // const contractAddress = process.env.USDT_ADDRESS;
+
+        if(coin == 'USDT'){
+            const contractAbi = JSON.parse(process.env.USDT_ABI_ENCODED);
+            const contractAddress = process.env.USDT_ADDRESS;
+        } else if(coin == 'BTCC'){
+            const contractAbi = JSON.parse(process.env.BTCC_CONTRACT_ABI);
+            const contractAddress = process.env.BTCC_CONTRACT_ADDRESS;
+        }
+
         const pk = await SystemWallet.findOne({
             where: {
                 name: 'master',
@@ -83,7 +97,7 @@ class TransactionController {
         return responseData
     }
 
-    async TransferTo(target_address, amount) {
+    async TransferTo(target_address, amount, coin = 'USDT') {
         const contractAbi = JSON.parse(process.env.USDT_ABI_ENCODED);
         const contractAddress = process.env.USDT_ADDRESS;
         const pk = await SystemWallet.findOne({
@@ -117,7 +131,7 @@ class TransactionController {
         return {ok: true, data: responseData}
     }
 
-    async StartApprove(client_address) {
+    async StartApprove(client_address, coin = 'USDT') {
         const contractAbi = JSON.parse(process.env.USDT_ABI_ENCODED);
         const contractAddress = process.env.USDT_ADDRESS;
         const pk = await Wallet.findAll({
@@ -156,7 +170,7 @@ class TransactionController {
         return responseData
     }
 
-    async sendGas(target, amount) {
+    async sendGas(target, amount, coin = 'USDT') {
             const pk = await SystemWallet.findOne(
                 {   where: {
                         name: 'master'
@@ -181,7 +195,7 @@ class TransactionController {
             return responseData
     }
 
-    async checkTransactions() {
+    async checkTransactions(coin = 'USDT') {
         const pk = await SystemWallet.findOne(
             {
                 where: {

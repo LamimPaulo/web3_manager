@@ -24,7 +24,6 @@ class WalletController {
             });
 
         const res = await response.json();
-        return res;
         var filtered = []
 
         res.result.forEach(r => {

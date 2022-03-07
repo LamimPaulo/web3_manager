@@ -5,15 +5,10 @@ import SystemWallet from "../models/SystemWallet.js";
 
 class TransactionController {
 
-    async signTx(sender, receiver, amount, coin = 'USDT') {
+    async signTx(sender, receiver, amount, abbr) {
         try {
-            if(coin == 'USDT'){
-                const contractAbi = JSON.parse(process.env.USDT_ABI_ENCODED);
-                const contractAddress = process.env.USDT_ADDRESS;
-            } else if(coin == 'BTCC'){
-                const contractAbi = JSON.parse(process.env.BTCC_CONTRACT_ABI);
-                const contractAddress = process.env.BTCC_CONTRACT_ADDRESS;
-            }
+            var contractAddress = await this.getContract(abbr)
+            var contractAbi = await this.getABI(abbr)
             const pk = await Wallet.findAll({
                 where: {
                     address: sender,
@@ -55,17 +50,9 @@ class TransactionController {
         }
     }
 
-    async TransferFrom(client_address, amount, coin = 'USDT') {
-        // const contractAbi = JSON.parse(process.env.USDT_ABI_ENCODED);
-        // const contractAddress = process.env.USDT_ADDRESS;
-
-        if(coin == 'USDT'){
-            const contractAbi = JSON.parse(process.env.USDT_ABI_ENCODED);
-            const contractAddress = process.env.USDT_ADDRESS;
-        } else if(coin == 'BTCC'){
-            const contractAbi = JSON.parse(process.env.BTCC_CONTRACT_ABI);
-            const contractAddress = process.env.BTCC_CONTRACT_ADDRESS;
-        }
+    async TransferFrom(client_address, amount, abbr) {
+        var contractAddress = await this.getContract(abbr)
+        var contractAbi = await this.getABI(abbr)
 
         const pk = await SystemWallet.findOne({
             where: {
@@ -97,9 +84,11 @@ class TransactionController {
         return responseData
     }
 
-    async TransferTo(target_address, amount, coin = 'USDT') {
-        const contractAbi = JSON.parse(process.env.USDT_ABI_ENCODED);
-        const contractAddress = process.env.USDT_ADDRESS;
+    async TransferTo(target_address, amount, abbr) {
+
+        var contractAddress = await this.getContract(abbr)
+        var contractAbi = await this.getABI(abbr)
+
         const pk = await SystemWallet.findOne({
             where: {
                 name: 'master',
@@ -131,15 +120,16 @@ class TransactionController {
         return {ok: true, data: responseData}
     }
 
-    async StartApprove(client_address, coin = 'USDT') {
-        const contractAbi = JSON.parse(process.env.USDT_ABI_ENCODED);
-        const contractAddress = process.env.USDT_ADDRESS;
+    async StartApprove(client_address, abbr) {
+        var contractAddress = await this.getContract(abbr)
+        var contractAbi = await this.getABI(abbr)
+
         const pk = await Wallet.findAll({
             where: {
                 address: client_address,
             }
         });
-        
+
         const master = await SystemWallet.findOne({
             where: {
                 name: 'master',
@@ -170,7 +160,7 @@ class TransactionController {
         return responseData
     }
 
-    async sendGas(target, amount, coin = 'USDT') {
+    async sendGas(target, amount) {
             const pk = await SystemWallet.findOne(
                 {   where: {
                         name: 'master'
@@ -195,7 +185,7 @@ class TransactionController {
             return responseData
     }
 
-    async checkTransactions(coin = 'USDT') {
+    async checkTransactions(abbr) {
         const pk = await SystemWallet.findOne(
             {
                 where: {
@@ -215,6 +205,46 @@ class TransactionController {
         web3.defaultAccount = pk.address
 
         return await web3.eth.subscribe()
+    }
+
+    async getContract(abbr){
+        var contract = ''
+        switch (abbr) {
+            case 'USDT':
+                contract = process.env.USDT_ADDRESS
+                break;
+            case 'NFT':
+                contract = process.env.NFT_CONTRACT_ADDRESS
+                break;
+            case 'BTCC':
+                contract = process.env.BTCC_CONTRACT_ADDRESS
+                break;
+            default:
+                contract = process.env.USDT_ADDRESS
+                break;
+            }
+
+            return contract
+    }
+
+    async getABI(abbr){
+        var abi = ''
+        switch (abbr) {
+            case 'USDT':
+                abi = process.env.USDT_ABI_ENCODED
+                break;
+            case 'NFT':
+                abi = process.env.NFT_CONTRACT_ABI
+                break;
+            case 'BTCC':
+                abi = process.env.BTCC_CONTRACT_ABI
+                break;
+            default:
+                abi = process.env.USDT_ABI_ENCODED
+                break;
+            }
+
+            return await JSON.parse(abi)
     }
 }
 

@@ -13,8 +13,11 @@ class WalletController {
         return data.address;
     }
 
-    async getInTransactions(address) {
-        const response = await fetch(process.env.BSC_ADDRESS+'api?module=account&action=tokentx&='+process.env.USDT_ADDRESS+'&address='+address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey=8Z5ZEBBPEIFWWJA54XM24IQNSXZFC8ZDUS', {
+    async getInTransactions(address, abbr) {
+        var contract_address = await this.getContract(abbr)
+        var contract_abi = await this.getABI(abbr)
+
+        const response = await fetch(process.env.BSC_ADDRESS+'api?module=account&action=tokentx&='+contract_address+'&address='+address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey=8Z5ZEBBPEIFWWJA54XM24IQNSXZFC8ZDUS', {
             method: 'get',
             headers: {'Content-Type': 'application/json'}
             });
@@ -22,9 +25,10 @@ class WalletController {
         const res = await response.json();
 
         var filtered = []
+
         res.result.forEach(r => {
             console.log(r.value)
-            if(r.value > 0 && r.to == address.toLowerCase() && r.contractAddress == process.env.USDT_ADDRESS){
+            if(r.value > 0 && r.to == address.toLowerCase() && r.contractAddress == contract_address){
                 const w3 = new Web3(process.env.PROVIDER_URL);
                 r.value = w3.utils.fromWei(r.value)
                 r.gasPrice = w3.utils.fromWei(r.gasPrice)
@@ -38,16 +42,19 @@ class WalletController {
         return filtered
     }
 
-    async getBalance(address) {
+    async getBalance(address, abbr) {
         const web3 = new Web3(process.env.PROVIDER_URL);
         const balance = await web3.eth.getBalance(address);
+        var usdtBalance = 0
+        var contract_address = await this.getContract(abbr)
+        var contract_abi = await this.getABI(abbr)
 
-        const usdt = new web3.eth.Contract(JSON.parse(process.env.USDT_ABI_ENCODED), process.env.USDT_ADDRESS);
-        const usdtBalance = await usdt.methods.balanceOf(address).call()
+        const usdt = new web3.eth.Contract(JSON.parse(contract_abi), contract_address);
+        usdtBalance = await usdt.methods.balanceOf(address).call()
 
         const data = {
-            bnb: await web3.utils.fromWei(balance),
-            usdt: await web3.utils.fromWei(usdtBalance)
+        bnb: await web3.utils.fromWei(balance),
+        usdt: await web3.utils.fromWei(usdtBalance)
         }
 
         return data
@@ -74,11 +81,14 @@ class WalletController {
         return data
     }
 
-    async getAllowance(owner) {
+    async getAllowance(owner, abbr) {
+        var contract_address = await this.getContract(abbr)
+        var contract_abi = await this.getABI(abbr)
+
         const web3 = new Web3(process.env.PROVIDER_URL);
         const master = await SystemWallet.findOne({where: {name: 'master'}})
 
-        const usdt = new web3.eth.Contract(JSON.parse(process.env.USDT_ABI_ENCODED), process.env.USDT_ADDRESS);
+        const usdt = new web3.eth.Contract(JSON.parse(contract_abi), contract_address);
         const response = await usdt.methods.allowance(owner, master.address).call()
 
         const data = response
@@ -94,6 +104,46 @@ class WalletController {
         model.save();
 
         return true
+    }
+
+    async getContract(abbr){
+        var contract = ''
+        switch (abbr) {
+            case 'USDT':
+                contract = process.env.USDT_ADDRESS
+                break;
+            case 'NFT':
+                contract = process.env.NFT_CONTRACT_ADDRESS
+                break;
+            case 'BTCC':
+                contract = process.env.BTCC_CONTRACT_ADDRESS
+                break;
+            default:
+                contract = process.env.USDT_ADDRESS
+                break;
+            }
+
+            return contract
+    }
+
+    async getABI(abbr){
+        var ABI = ''
+        switch (abbr) {
+            case 'USDT':
+                ABI = process.env.USDT_ABI_ENCODED
+                break;
+            case 'NFT':
+                ABI = process.env.NFT_CONTRACT_ABI
+                break;
+            case 'BTCC':
+                ABI = process.env.BTCC_CONTRACT_ABI
+                break;
+            default:
+                ABI = process.env.USDT_ABI_ENCODED
+                break;
+            }
+
+            return ABI
     }
 
 }

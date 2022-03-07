@@ -23,17 +23,18 @@ app.get('/address', async (req, res) => {
   });
 
 app.post('/getbalance',async (req, res) => {
-  const { address } = req.body;
+  const { address, abbr } = req.body;
   return res.send({
     status: 'ok',
     message: 'success',
-    data: await walletController.getBalance(address)
+    data: await walletController.getBalance(address, abbr)
   });
 });
 
 app.post('/getintransactions',async (req, res) => {
-  const { address } = req.body;
-  const data = await walletController.getInTransactions(address)
+  const { address, abbr } = req.body;
+  const data = await walletController.getInTransactions(address, abbr)
+  
   return res.send({
     status: 'ok',
     message: 'success',
@@ -52,17 +53,17 @@ app.post('/system/balance',async (req, res) => {
 });
 
 app.post('/get-allowance',async (req, res) => {
-  const { owner } = req.body;
+  const { owner, abbr } = req.body;
   return res.send({
     status: 'ok',
     message: 'success',
-    data: await walletController.getAllowance(owner)
+    data: await walletController.getAllowance(owner, abbr)
   });
 });
 
 app.post('/sign-tx', async (req, res) => {
-    const {receiver, amount} = req.body;
-    return await transactionController.signTx(receiver, amount)
+    const {receiver, amount, abbr} = req.body;
+    return await transactionController.signTx(receiver, amount, abbr)
     .then((sign) => {
         return res.send(sign);
     }).catch((error) => {
@@ -72,8 +73,8 @@ app.post('/sign-tx', async (req, res) => {
 });
 
 app.post('/send-from', async (req, res) => {
-    const {client_address, amount} = req.body;
-    return await transactionController.TransferFrom(client_address, amount)
+    const {client_address, amount, abbr} = req.body;
+    return await transactionController.TransferFrom(client_address, amount, abbr)
     .then((sign) => {
         return res.send(sign);
     }).catch((error) => {
@@ -82,8 +83,8 @@ app.post('/send-from', async (req, res) => {
 });
 
 app.post('/send-to', async (req, res) => {
-    const {target_address, amount} = req.body;
-    return await transactionController.TransferTo(target_address, amount)
+    const {target_address, amount, abbr} = req.body;
+    return await transactionController.TransferTo(target_address, amount, abbr)
     .then((sign) => {
         return res.send(sign);
     }).catch((error) => {
@@ -92,8 +93,8 @@ app.post('/send-to', async (req, res) => {
 });
 
 app.post('/start-allowance', async (req, res) => {
-    const {client_address} = req.body;
-    return await transactionController.StartApprove(client_address)
+    const {client_address, abbr} = req.body;
+    return await transactionController.StartApprove(client_address, abbr)
     .then((sign) => {
         return res.send(sign);
     }).catch((error) => {

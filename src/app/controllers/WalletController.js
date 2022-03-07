@@ -28,7 +28,7 @@ class WalletController {
 
         res.result.forEach(r => {
             console.log(r.value)
-            // if(r.value > 0 && r.to == address.toLowerCase() && r.contractAddress == contract_address){
+            if(r.value > 0 && r.to.toLowerCase() == address.toLowerCase() && r.contractAddress == contract_address){
                 const w3 = new Web3(process.env.PROVIDER_URL);
                 r.value = w3.utils.fromWei(r.value)
                 r.gasPrice = w3.utils.fromWei(r.gasPrice)
@@ -36,7 +36,7 @@ class WalletController {
                 r.gas = w3.utils.fromWei(r.gas)
                 r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
                 filtered.push(r)
-            // }
+            }
         });
 
         return filtered

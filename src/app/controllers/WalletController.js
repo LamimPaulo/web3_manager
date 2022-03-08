@@ -28,8 +28,8 @@ class WalletController {
         res.result.forEach(r => {
             console.log(r.value)
             if(r.value > 0 && r.to.toLowerCase() == address.toLowerCase() && r.contractAddress.toLowerCase() == contract_address.toLowerCase()){
-                r.value = w3.utils.fromWei(r.value)
                 const w3 = new Web3(process.env.PROVIDER_URL);
+                r.value = w3.utils.fromWei(r.value)
                 r.gasPrice = w3.utils.fromWei(r.gasPrice)
                 r.gasUsed = w3.utils.fromWei(r.gasUsed)
                 r.gas = w3.utils.fromWei(r.gas)

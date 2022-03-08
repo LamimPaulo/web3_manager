@@ -34,7 +34,7 @@ app.post('/getbalance',async (req, res) => {
 app.post('/getintransactions',async (req, res) => {
   const { address, abbr } = req.body;
   const data = await walletController.getInTransactions(address, abbr)
-  
+
   return res.send({
     status: 'ok',
     message: 'success',

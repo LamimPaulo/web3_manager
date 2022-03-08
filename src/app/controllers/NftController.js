@@ -61,7 +61,7 @@ class NftController {
         return data
     }
 
-    async withdrawalToken(token_id, address) {x1
+    async withdrawalToken(token_id, address) {
         const contractAbi = JSON.parse(process.env.NFT_CONTRACT_ABI);
         // const contractAbi = await this.contractAbi(process.env.NFT_CONTRACT_ABI);
         const contractAddress = process.env.NFT_CONTRACT_ADDRESS;

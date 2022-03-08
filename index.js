@@ -156,6 +156,16 @@ app.post('/nft/withdrawal', async (req, res) => {
       }).catch((error) => {
         return res.status(400).send(error);
       })
+});
+
+app.post('/nft/transfer', async (req, res) => {
+    const { token_id, address } = req.body
+      return await nftController.withdrawalToken(token_id, address)
+      .then((data) => {
+        return res.status(200).send(data);
+      }).catch((error) => {
+        return res.status(400).send(error);
+      })
   });
 
 app.post('/nft/abi', async (req, res) => {

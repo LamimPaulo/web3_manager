@@ -23,7 +23,7 @@ class WalletController {
             });
 
         const res = await response.json();
-return res;
+return res.result;
         var filtered = []
 
         res.result.forEach(r => {

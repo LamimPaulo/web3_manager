@@ -52,12 +52,19 @@ class WalletController {
         const usdt = new web3.eth.Contract(JSON.parse(contract_abi), contract_address);
         usdtBalance = await usdt.methods.balanceOf(address).call()
 
-        const data = {
-        bnb: await web3.utils.fromWei(balance),
-        usdt: await web3.utils.fromWei(usdtBalance)
+        if(abbr == 'NFT'){
+            return {
+                bnb: await web3.utils.fromWei(balance),
+                usdt: await usdtBalance
+            }
+        } else {
+            return {
+                bnb: await web3.utils.fromWei(balance),
+                usdt: await web3.utils.fromWei(usdtBalance)
+            }
         }
 
-        return data
+        // return data
     }
 
     async getSystemBalance() {

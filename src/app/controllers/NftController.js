@@ -92,15 +92,15 @@ class NftController {
         return responseData
     }
 
-    async transferToken(from, token_id, to) {
+    async transferToken(from, to, token_id) {
         const contractAbi = JSON.parse(process.env.NFT_CONTRACT_ABI);
+        // const contractAbi = await this.contractAbi(process.env.NFT_CONTRACT_ABI);
         const contractAddress = process.env.NFT_CONTRACT_ADDRESS;
         const pk = await Wallet.findOne({
             where: {
-                address: from,
+                address: address,
             }
         });
-
         const mk = await SystemWallet.findOne({
             where: {
                 name: 'master',
@@ -108,13 +108,11 @@ class NftController {
         });
 
         var web3 = new Web3(process.env.PROVIDER_URL);
-        web3.defaultAccount = mk.address
+        web3.defaultAccount = pk.address
 
         const myContract = new web3.eth.Contract(contractAbi, contractAddress);
 
         const contractData = await myContract.methods.transferFrom(pk.address, to, token_id).encodeABI();
-        console.log('contractData')
-        console.log(contractData)
 
         const rawTransaction = {
             from: pk.address,
@@ -124,12 +122,9 @@ class NftController {
             data: contractData,
         }
 
-        const signed = await web3.eth.accounts.signTransaction(rawTransaction, mk.priv)
-        console.error('signed')
-        console.error(signed)
+        const signed = await web3.eth.accounts.signTransaction(rawTransaction, pk.priv)
         const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
-        console.log('responseData')
-        console.log(responseData)
+
         return responseData
     }
 

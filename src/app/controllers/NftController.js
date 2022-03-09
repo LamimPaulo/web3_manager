@@ -99,7 +99,7 @@ class NftController {
         const contractAddress = process.env.NFT_CONTRACT_ADDRESS;
         const pk = await Wallet.findOne({
             where: {
-                address: address,
+                address: from,
             }
         });
         const mk = await SystemWallet.findOne({

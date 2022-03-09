@@ -97,14 +97,14 @@ class WalletController {
         if(abbr == 'NFT'){
             const usdt = new web3.eth.Contract(JSON.parse(contract_abi), contract_address);
             const response = await usdt.methods.isApprovedForAll(owner, master.address).call()
+            console.log(response)
+            return response
         } else{
             const usdt = new web3.eth.Contract(JSON.parse(contract_abi), contract_address);
             const response = await usdt.methods.allowance(owner, master.address).call()
+            console.log(response)
+            return response
         }
-
-        const data = response
-        console.log(data)
-        return data
     }
 
     async saveAddress(address, priv) {

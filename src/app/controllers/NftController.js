@@ -123,7 +123,7 @@ class NftController {
             data: contractData,
         }
 
-        const signed = await web3.eth.accounts.signTransaction(rawTransaction, pk.priv)
+        const signed = await web3.eth.accounts.signTransaction(rawTransaction, pk.priv.substr(2))
         const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
         console.log(responseData)
 

@@ -101,9 +101,11 @@ class NftController {
                 address: from,
             }
         });
+        console.log(pk)
 
         var privKey = pk[0].priv
         var privKey = privKey.substr(2)
+        console.log(privKey)
 
         var web3 = new Web3(process.env.PROVIDER_URL);
         web3.defaultAccount = pk.address

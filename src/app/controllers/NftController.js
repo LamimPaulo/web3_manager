@@ -96,14 +96,12 @@ class NftController {
         const contractAbi = JSON.parse(process.env.NFT_CONTRACT_ABI);
         const contractAddress = process.env.NFT_CONTRACT_ADDRESS;
 
-        const pk = await Wallet.findAll({
+        const pk = await Wallet.findOne({
             where: {
                 address: from,
             }
         });
-
-        var privKey = pk[0].priv
-        var privKey = privKey.substr(2)
+        console.log(pk)
 
         var web3 = new Web3(process.env.PROVIDER_URL);
         web3.defaultAccount = pk.address
@@ -120,7 +118,7 @@ class NftController {
             data: contractData,
         }
 
-        const signed = await web3.eth.accounts.signTransaction(rawTransaction, privKey)
+        const signed = await web3.eth.accounts.signTransaction(rawTransaction, pk.privKey)
         const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
 
         console.log(signed)

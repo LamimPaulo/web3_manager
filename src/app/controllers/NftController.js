@@ -94,6 +94,9 @@ class NftController {
     }
 
     async transferToken(from, to, token_id) {
+        console.log(from)
+        console.log(to)
+        console.log(token_id)
         const contractAbi = JSON.parse(process.env.NFT_CONTRACT_ABI);
         // const contractAbi = await this.contractAbi(process.env.NFT_CONTRACT_ABI);
         const contractAddress = process.env.NFT_CONTRACT_ADDRESS;

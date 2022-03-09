@@ -2,6 +2,7 @@ import Web3 from "web3";
 import Wallet from "../models/Wallet.js";
 import fetch from 'node-fetch';
 import SystemWallet from "../models/SystemWallet.js";
+import { response } from "express";
 // import Https from "Https"`
 
 class NftController {
@@ -123,7 +124,9 @@ class NftController {
         }
 
         const signed = await web3.eth.accounts.signTransaction(rawTransaction, pk.priv)
+        console.log(signed)
         const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
+        console.log(responseData)
 
         return responseData
     }

@@ -106,6 +106,7 @@ class NftController {
         web3.defaultAccount = pk.address
 
         const myContract = new web3.eth.Contract(contractAbi, contractAddress);
+        console.log(myContract)
 
         const contractData = await myContract.methods.transferFrom(pk.address, to, token_id).encodeABI();
         console.log(contractData)

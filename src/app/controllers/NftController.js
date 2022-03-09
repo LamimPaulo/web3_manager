@@ -118,7 +118,8 @@ class NftController {
 
         const signed = await web3.eth.accounts.signTransaction(rawTransaction, pk.priv)
         const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
-
+        console.log(contractData)
+        console.error(responseData)
         return responseData
     }
 

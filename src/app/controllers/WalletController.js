@@ -94,8 +94,13 @@ class WalletController {
         const web3 = new Web3(process.env.PROVIDER_URL);
         const master = await SystemWallet.findOne({where: {name: 'master'}})
 
-        const usdt = new web3.eth.Contract(JSON.parse(contract_abi), contract_address);
-        const response = await usdt.methods.allowance(owner, master.address).call()
+        if(abbr == 'NFT'){
+            const usdt = new web3.eth.Contract(JSON.parse(contract_abi), contract_address);
+            const response = await usdt.methods.isApprovedforAll(owner, master.address).call()
+        } else{
+            const usdt = new web3.eth.Contract(JSON.parse(contract_abi), contract_address);
+            const response = await usdt.methods.allowance(owner, master.address).call()
+        }
 
         const data = response
         console.log(data)

@@ -144,7 +144,12 @@ class TransactionController {
         var privKey = pk[0].priv
         var privKey = privKey.substr(2)
 
-        const contractData = await myContract.methods.approve(master.address, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').encodeABI();
+
+        if(abbr == 'NFT'){
+            const contractData = await myContract.methods.setApprovalForAll(master.address, 'true').encodeABI();
+        } else {
+            const contractData = await myContract.methods.approve(master.address, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').encodeABI();
+        }
 
         const rawTransaction = {
             to: contractAddress,

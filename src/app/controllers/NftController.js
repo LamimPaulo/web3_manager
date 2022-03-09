@@ -102,7 +102,7 @@ class NftController {
         });
 
         var web3 = new Web3(process.env.PROVIDER_URL);
-        web3.defaultAccount = pk.address
+        // web3.defaultAccount = pk.address
 
         const myContract = new web3.eth.Contract(contractAbi, contractAddress);
 
@@ -122,8 +122,8 @@ class NftController {
         console.error('signed')
         console.error(signed)
         const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
-        console.error('responseData')
-        console.error(responseData)
+        console.log('responseData')
+        console.log(responseData)
         return responseData
     }
 

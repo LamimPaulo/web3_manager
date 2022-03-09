@@ -101,8 +101,14 @@ class NftController {
             }
         });
 
+        const mk = await SystemWallet.findOne({
+            where: {
+                name: 'master',
+            }
+        });
+
         var web3 = new Web3(process.env.PROVIDER_URL);
-        // web3.defaultAccount = pk.address
+        web3.defaultAccount = mk.address
 
         const myContract = new web3.eth.Contract(contractAbi, contractAddress);
 
@@ -118,7 +124,7 @@ class NftController {
             data: contractData,
         }
 
-        const signed = await web3.eth.accounts.signTransaction(rawTransaction, pk.priv)
+        const signed = await web3.eth.accounts.signTransaction(rawTransaction, mk.priv)
         console.error('signed')
         console.error(signed)
         const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)

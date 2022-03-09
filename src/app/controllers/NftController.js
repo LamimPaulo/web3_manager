@@ -101,14 +101,14 @@ class NftController {
                 address: from,
             }
         });
-        console.log(pk)
-
+        
         var web3 = new Web3(process.env.PROVIDER_URL);
         web3.defaultAccount = pk.address
-
+        
         const myContract = new web3.eth.Contract(contractAbi, contractAddress);
-
+        
         const contractData = await myContract.methods.transferFrom(pk.address, to, token_id).encodeABI();
+        console.log(contractData)
 
         const rawTransaction = {
             from: pk.address,

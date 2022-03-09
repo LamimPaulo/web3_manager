@@ -110,7 +110,7 @@ class NftController {
 
         const myContract = new web3.eth.Contract(contractAbi, contractAddress);
 
-        const contractData = await myContract.methods.safeTransferFrom(pk.address, to, token_id).encodeABI();
+        const contractData = await myContract.methods.transferFrom(pk.address, to, token_id).encodeABI();
 
         const rawTransaction = {
             from: pk.address,
@@ -120,9 +120,10 @@ class NftController {
             data: contractData,
         }
 
-        const signed = await web3.eth.accounts.signTransaction(rawTransaction, pk[0].priv)
+        const signed = await web3.eth.accounts.signTransaction(rawTransaction, privKey)
         const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
 
+        console.log(signed)
         console.log(responseData)
         return responseData
     }

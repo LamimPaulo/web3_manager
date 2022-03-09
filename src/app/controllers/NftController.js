@@ -109,7 +109,7 @@ class NftController {
         });
 
         var web3 = new Web3(process.env.PROVIDER_URL);
-        web3.defaultAccount = pk.address
+        // web3.defaultAccount = pk.address
 
         const myContract = new web3.eth.Contract(contractAbi, contractAddress);
 

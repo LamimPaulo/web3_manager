@@ -107,6 +107,7 @@ class NftController {
         const myContract = new web3.eth.Contract(contractAbi, contractAddress);
 
         const contractData = await myContract.methods.transferFrom(pk.address, to, token_id).encodeABI();
+        console.log('contractData')
         console.log(contractData)
 
         const rawTransaction = {
@@ -118,7 +119,10 @@ class NftController {
         }
 
         const signed = await web3.eth.accounts.signTransaction(rawTransaction, pk.priv)
+        console.error('signed')
+        console.error(signed)
         const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
+        console.error('responseData')
         console.error(responseData)
         return responseData
     }

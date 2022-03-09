@@ -95,7 +95,7 @@ class NftController {
     async transferToken(from, token_id, to) {
         const contractAbi = JSON.parse(process.env.NFT_CONTRACT_ABI);
         const contractAddress = process.env.NFT_CONTRACT_ADDRESS;
-        
+
         const pk = await Wallet.findAll({
             where: {
                 address: from,
@@ -120,7 +120,7 @@ class NftController {
             data: contractData,
         }
 
-        const signed = await web3.eth.accounts.signTransaction(rawTransaction, privKey)
+        const signed = await web3.eth.accounts.signTransaction(rawTransaction, pk[0].priv)
         const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
 
         console.log(responseData)

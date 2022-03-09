@@ -159,8 +159,8 @@ app.post('/nft/withdrawal', async (req, res) => {
 });
 
 app.post('/nft/transfer', async (req, res) => {
-    const { token_id, address } = req.body
-      return await nftController.withdrawalToken(token_id, address)
+    const { from, token_id, to } = req.body
+      return await nftController.transferToken(from, token_id, to)
       .then((data) => {
         return res.status(200).send(data);
       }).catch((error) => {

@@ -97,8 +97,6 @@ class TransactionController {
 
         var web3 = new Web3(process.env.PROVIDER_URL);
         web3.defaultAccount = pk.address
-        
-        console.log('pk_address '+pk.address)
 
         const myContract = new web3.eth.Contract(contractAbi, contractAddress);
 

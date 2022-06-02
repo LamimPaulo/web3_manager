@@ -97,6 +97,8 @@ class TransactionController {
 
         var web3 = new Web3(process.env.PROVIDER_URL);
         web3.defaultAccount = pk.address
+        
+        console.log('pk_address '+pk.address)
 
         const myContract = new web3.eth.Contract(contractAbi, contractAddress);
 
@@ -108,7 +110,7 @@ class TransactionController {
         const rawTransaction = {
             from: pk.address,
             to: contractAddress,
-            gas: web3.utils.toHex(5000000),
+            gas: web3.utils.toHex(1000000),
             gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
             data: contractData,
         }
@@ -129,6 +131,7 @@ class TransactionController {
                 address: client_address,
             }
         });
+        console.log('')
 
         const master = await SystemWallet.findOne({
             where: {

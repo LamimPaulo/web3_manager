@@ -1,7 +1,13 @@
 import Web3 from "web3";
 import SystemWallet from "../models/SystemWallet.js";
 import Wallet from "../models/Wallet.js";
+import SystemNetwork from "../models/SystemNetwork.js";
 import fetch from 'node-fetch';
+import NetworkKey from "../models/NetworkKey.js";
+import Token from "../models/Token.js";
+import roundround from "roundround";
+import https from "http";
+
 class WalletController {
 
     createAddress() {
@@ -12,6 +18,75 @@ class WalletController {
 
         return data.address;
     }
+
+    async getBalanceByContract(address, contract_addr, network)
+    {
+
+        const token = await Token.findOne({
+            where: {
+                contract_address: contract_addr
+            }
+        });
+
+        const chain = await SystemNetwork.findOne({
+            where: {
+                name: network,
+            }
+        });
+
+        const web3 = new Web3(chain.provider);
+
+        const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
+        const token_balance = await web3_token.methods.balanceOf(address).call()
+
+
+        return {
+            status: 200,
+            message: 'ok',
+            token: token.name,
+            balance: token_balance,
+        };
+    }
+
+    async getMasterBalanceByContract(contract_addr, network)
+    {
+        try {
+            const token = await Token.findOne({
+                where: {
+                    contract_address: contract_addr
+                }
+            });
+            const master = await SystemWallet.findOne({
+                where: {
+                    name: 'master',
+                }
+            })
+            const chain = await SystemNetwork.findOne({
+                where: {
+                    name: network,
+                }
+            });
+
+            const web3 = new Web3(chain.provider);
+
+            const balance = await web3.eth.getBalance(master.address);
+            const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
+            const token_balance = await web3_token.methods.balanceOf(master.address).call()
+
+            return {
+                status: 200,
+                message: 'system wallet',
+                token: token.name,
+                balance: web3.utils.fromWei(token_balance),
+                bnb: web3.utils.fromWei(balance),
+            };
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+
 
     async getInTransactions(address, abbr) {
         var contract_address = await this.getContract(abbr)
@@ -156,6 +231,99 @@ class WalletController {
             }
 
             return ABI
+    }
+
+    async test() {
+        var networks = await SystemNetwork.findAll({
+            where: {
+                is_active: true
+            }
+        });
+        var keyss = []
+        for(const network of networks) {
+            var keys = await NetworkKey.findAll({
+                where: {
+                    network_id: network.id,
+                    is_active: true,
+                    is_daily_expired: false
+                }
+            });
+            for(const key of keys){
+                keyss.push({key: key.key, url: key.url})
+            };
+            var next = roundround(keyss);
+
+            var wallets = await Wallet.findAll();
+            for(const wallet of wallets){
+                //bnb
+                // const response = await fetch(key.url+'api?module=account&action=txlist'+'&address='+address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+key.key, {
+
+                //tokens
+                const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key, {
+                method: 'get',
+                headers: {'Content-Type': 'application/json'}
+                });
+
+                const res = await response.json();
+                if(res.result){
+                    for(const r of res.result) {
+                        // if(r.value > 0 && r.to.toLowerCase() == address.toLowerCase() && r.contractAddress.toLowerCase() == contract_address.toLowerCase()){
+                        if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase()){
+                            const w3 = new Web3(process.env.PROVIDER_URL);
+                            r.value = w3.utils.fromWei(r.value)
+                            r.gasPrice = w3.utils.fromWei(r.gasPrice)
+                            r.gasUsed = w3.utils.fromWei(r.gasUsed)
+                            r.gas = w3.utils.fromWei(r.gas)
+                            r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
+                            r.network = network.name
+
+                            const notified = await this.notifyExchange(JSON.stringify(r));
+                            console.log('notified: ');
+                            console.log(notified);
+                        }
+                    };
+                }
+            };
+        };
+        return true;
+    }
+
+    async notifyExchange(data){
+        try {
+
+            const options = {
+                hostname: 'localhost',
+                port: 8000,
+                path: '/api/evmNotify',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Content-Length': data.length,
+                },
+            };
+
+            const req = await https.request(options, res => {
+                console.log(`statusCode: ${res.statusCode}`);
+
+                res.on('data', d => {
+                    // console.warn(d)
+                    // process.stdout.write(d);
+                    return d;
+                });
+            });
+
+            await req.on('error', error => {
+                console.log(error);
+                return error;
+            });
+
+            await req.write(data);
+            await req.end();
+            return await req
+        } catch (error) {
+            console.error(error);
+        }
     }
 }
 

@@ -1,8 +1,11 @@
 import Sequelize from 'sequelize';
 import databaseConfig from '../config/database.cjs';
 import Wallet from '../app/models/Wallet.js'
+import Token from '../app/models/Token.js'
 import SystemWallet from '../app/models/SystemWallet.js'
-const models = [Wallet, SystemWallet];
+import SystemNetwork from '../app/models/SystemNetwork.js'
+import NetworkKey from '../app/models/NetworkKey.js'
+const models = [Wallet, SystemWallet, SystemNetwork, NetworkKey, Token];
 
 class Database {
   constructor(){

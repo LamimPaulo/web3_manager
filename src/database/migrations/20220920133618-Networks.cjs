@@ -1,19 +1,23 @@
 'use strict';
- 
+
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable("wallets",{
+  up: (queryInterface, Sequelize) => queryInterface.createTable("system_networks",{
     id:{
       type: Sequelize.INTEGER,
       allowNull:false,
       autoIncrement: true,
       primaryKey:true
     },
+    name: {
+      type: Sequelize.STRING(),
+      allowNull: false,
+    },
     address:{
       type: Sequelize.STRING(),
       allowNull:false
     },
-    priv: {
-      type: Sequelize.STRING(),
+    is_active: {
+      type: Sequelize.BOOLEAN(),
       allowNull: false
     },
     created_at: {
@@ -27,7 +31,13 @@ module.exports = {
       allowNull: false
     }
   }),
-  
 
-  down: (queryInterface) => queryInterface.dropTable("wallets")
+  down: async (queryInterface, Sequelize) => {
+    /**
+     * Add reverting commands here.
+     *
+     * Example:
+     * await queryInterface.dropTable('users');
+     */
+  }
 };

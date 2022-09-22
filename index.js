@@ -18,6 +18,10 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
   }));
 
+app.get('/test', async (req, res) => {
+    return await res.send(walletController.test());
+  });
+
 app.get('/address', async (req, res) => {
     return await res.send(walletController.createAddress());
   });
@@ -30,6 +34,28 @@ app.post('/getbalance',async (req, res) => {
     data: await walletController.getBalance(address, abbr)
   });
 });
+
+
+
+app.post('/getbalanceByToken',async (req, res) => {
+  const { address, contract, network } = req.body;
+  return res.send({
+    status: 'ok',
+    message: 'success',
+    data: await walletController.getBalanceByContract(address, contract, network)
+  });
+});
+
+app.post('/getMasterBalanceByToken',async (req, res) => {
+  const {contract, network} = req.body;
+  return res.send({
+    status: 'ok',
+    message: 'success',
+    data: await walletController.getMasterBalanceByContract(contract, network)
+  });
+});
+
+
 
 app.post('/getintransactions',async (req, res) => {
   const { address, abbr } = req.body;
@@ -91,6 +117,21 @@ app.post('/send-to', async (req, res) => {
         return res.status(400).send({ok: false, data: error.message});
     })
 });
+
+
+app.post('/transferToByToken', async (req, res) => {
+    const {target_address, amount, contract, network} = req.body;
+    return await transactionController.TransferToByToken(target_address, amount, contract, network)
+    .then((sign) => {
+        return res.send(sign);
+    }).catch((error) => {
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
 
 app.post('/start-allowance', async (req, res) => {
     const {client_address, abbr} = req.body;

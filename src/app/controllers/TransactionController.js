@@ -1,6 +1,10 @@
 import Web3 from "web3";
 import Wallet from "../models/Wallet.js";
 import SystemWallet from "../models/SystemWallet.js";
+import Token from "../models/Token.js";
+import SystemNetwork from "../models/SystemNetwork.js";
+
+
 // import Https from "Https"`
 
 class TransactionController {
@@ -119,6 +123,54 @@ class TransactionController {
         console.log(responseData)
         return {ok: true, data: responseData}
     }
+
+
+    async TransferToByToken(target_address, amount, contract, network) {
+
+        const token = await Token.findOne({
+            where: {
+                contract_address: contract
+            }
+        });
+        const master = await SystemWallet.findOne({
+            where: {
+                name: 'master',
+            }
+        })
+        const chain = await SystemNetwork.findOne({
+            where: {
+                name: network,
+            }
+        });
+
+        var web3 = new Web3(chain.provider);
+        web3.defaultAccount = master.address
+        const myContract = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
+
+        console.log(amount);
+
+        const contractData = await myContract.methods.transfer(
+                target_address,
+                web3.utils.toHex(web3.utils.toWei(amount, 'ether')),
+            ).encodeABI();
+
+        const rawTransaction = {
+            from: master.address,
+            to: token.contract_address,
+            // masFeePerGas: 250000000000,
+            // masPriorityFeePerGas: 250000000000,
+            // gas: 21000,
+            gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
+            gas: web3.utils.toHex(1000000),
+            data: contractData,
+        }
+
+        const signed = await web3.eth.accounts.signTransaction(rawTransaction, master.priv)
+        const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
+
+        return {ok: true, data: responseData}
+    }
+
 
     async StartApprove(client_address, abbr) {
         var contractAddress = await this.getContract(abbr)

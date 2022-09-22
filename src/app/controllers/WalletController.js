@@ -1,12 +1,12 @@
 import Web3 from "web3";
 import SystemWallet from "../models/SystemWallet.js";
 import Wallet from "../models/Wallet.js";
-import SystemNetwork from "../models/SystemNetwork.js";
 import fetch from 'node-fetch';
 import NetworkKey from "../models/NetworkKey.js";
 import Token from "../models/Token.js";
 import roundround from "roundround";
 import https from "http";
+import SystemNetwork from "../models/SystemNetwork.js";
 
 class WalletController {
 
@@ -255,33 +255,53 @@ class WalletController {
 
             var wallets = await Wallet.findAll();
             for(const wallet of wallets){
-                //bnb
+
+                const tokens = await Token.findAll({
+                    where: {
+                        is_active: true
+                    }
+                });
+
+                const web3 = new Web3(network.provider);
+                var balance = 0
+
+                for(const token of tokens){
+                    const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
+                    const token_balance = await web3_token.methods.balanceOf(wallet.address).call()
+                    if(token_balance > 0){
+                        balance++;
+                    }
+                    console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(token_balance)+' '+token.name);
+                }
+
+
+                if(balance > 0){
+                    //bnb - eth
                 // const response = await fetch(key.url+'api?module=account&action=txlist'+'&address='+address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+key.key, {
 
                 //tokens
                 const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key, {
-                method: 'get',
-                headers: {'Content-Type': 'application/json'}
-                });
+                    method: 'get',
+                    headers: {'Content-Type': 'application/json'}
+                    });
 
-                const res = await response.json();
-                if(res.result){
-                    for(const r of res.result) {
-                        // if(r.value > 0 && r.to.toLowerCase() == address.toLowerCase() && r.contractAddress.toLowerCase() == contract_address.toLowerCase()){
-                        if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase()){
-                            const w3 = new Web3(process.env.PROVIDER_URL);
-                            r.value = w3.utils.fromWei(r.value)
-                            r.gasPrice = w3.utils.fromWei(r.gasPrice)
-                            r.gasUsed = w3.utils.fromWei(r.gasUsed)
-                            r.gas = w3.utils.fromWei(r.gas)
-                            r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
-                            r.network = network.name
+                    const res = await response.json();
+                    if(res.result){
+                        for(const r of res.result) {
+                            // if(r.value > 0 && r.to.toLowerCase() == address.toLowerCase() && r.contractAddress.toLowerCase() == contract_address.toLowerCase()){
+                            if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase()){
+                                const w3 = new Web3(process.env.PROVIDER_URL);
+                                r.value = w3.utils.fromWei(r.value)
+                                r.gasPrice = w3.utils.fromWei(r.gasPrice)
+                                r.gasUsed = w3.utils.fromWei(r.gasUsed)
+                                r.gas = w3.utils.fromWei(r.gas)
+                                r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
+                                r.network = network.name
 
-                            const notified = await this.notifyExchange(JSON.stringify(r));
-                            console.log('notified: ');
-                            console.log(notified);
-                        }
-                    };
+                                const notified = await this.notifyExchange(JSON.stringify(r));
+                            }
+                        };
+                    }
                 }
             };
         };
@@ -304,7 +324,6 @@ class WalletController {
             };
 
             const req = await https.request(options, res => {
-                console.log(`statusCode: ${res.statusCode}`);
 
                 res.on('data', d => {
                     // console.warn(d)
@@ -314,7 +333,6 @@ class WalletController {
             });
 
             await req.on('error', error => {
-                console.log(error);
                 return error;
             });
 

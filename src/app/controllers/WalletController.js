@@ -7,6 +7,10 @@ import Token from "../models/Token.js";
 import roundround from "roundround";
 import https from "http";
 import SystemNetwork from "../models/SystemNetwork.js";
+import amqp from "amqplib";
+import TransactionController from "./TransactionController.js";
+import { Transaction } from "ethereumjs-tx";
+import NetworkGas from "../models/NetworkGas.js";
 
 class WalletController {
 
@@ -21,7 +25,6 @@ class WalletController {
 
     async getBalanceByContract(address, contract_addr, network)
     {
-
         const token = await Token.findOne({
             where: {
                 contract_address: contract_addr
@@ -36,6 +39,8 @@ class WalletController {
 
         const web3 = new Web3(chain.provider);
 
+
+        const balance = await web3.eth.getBalance(address);
         const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
         const token_balance = await web3_token.methods.balanceOf(address).call()
 
@@ -45,6 +50,7 @@ class WalletController {
             message: 'ok',
             token: token.name,
             balance: token_balance,
+            bnb: balance,
         };
     }
 
@@ -85,8 +91,6 @@ class WalletController {
             console.error(error);
         }
     }
-
-
 
     async getInTransactions(address, abbr) {
         var contract_address = await this.getContract(abbr)
@@ -183,6 +187,29 @@ class WalletController {
         }
     }
 
+    async getAllowanceByToken(address, contract, network) {
+        const token = await Token.findOne({
+            where: {
+                contract_address: contract
+            }
+        });
+        const master = await SystemWallet.findOne({
+            where: {
+                name: 'master',
+            }
+        })
+        const chain = await SystemNetwork.findOne({
+            where: {
+                name: network,
+            }
+        });
+        const web3 = new Web3(chain.provider);
+
+        const contract_std = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
+        const response = await contract_std.methods.allowance(address, master.address).call()
+        return response
+    }
+
     async saveAddress(address, priv) {
         const model = await Wallet.create({
             'address': address,
@@ -233,7 +260,7 @@ class WalletController {
             return ABI
     }
 
-    async test() {
+    async checkReceivedTransactionsByToken() {
         var networks = await SystemNetwork.findAll({
             where: {
                 is_active: true
@@ -327,10 +354,11 @@ class WalletController {
 
                 res.on('data', d => {
                     // console.warn(d)
-                    // process.stdout.write(d);
+                    process.stdout.write(d);
                     return d;
                 });
             });
+
 
             await req.on('error', error => {
                 return error;
@@ -339,6 +367,67 @@ class WalletController {
             await req.write(data);
             await req.end();
             return await req
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async checkBalanceHookToMaster(){
+        try {
+            const opt = { credentials: amqp.credentials.plain('admin', 'N@videv1') };
+
+            const connection = await amqp.connect("amqp://177.38.215.101:5672", opt);
+            const channel = await connection.createChannel();
+            await channel.assertQueue("ex.token_balance_hook");
+            channel.consume("ex.token_balance_hook", async message => {
+                const input = JSON.parse(JSON.parse(message.content.toString()));
+                // console.log(input);
+
+                const web3 = new Web3();
+                const transactionController = new TransactionController();
+
+                const balance = await this.getBalanceByContract(input.address, input.contract, input.network);
+                console.log(balance);
+                console.log(web3.utils.fromWei(balance.balance));
+                if(balance.balance > 0){
+                    const allowance = await this.getAllowanceByToken(input.address, input.contract, input.network);
+
+                    console.log('allowance');
+                    console.log(allowance);
+
+                    if(allowance <= 100 ){
+                        const rec_gas = await NetworkGas.findOne();
+                        const estimate = (web3.utils.toWei('10', 'gwai') * web3.utils.toWei('50', 'Kwei'));
+                        console.log('estimate: '+estimate);
+                        if(web3.utils.toWei(balance.bnb, 'Gwei') < web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) ){
+                            console.log('caiu no if')
+                            console.log(web3.utils.toWei(balance.bnb, 'Kwei'))
+                            console.log(web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) )
+                            var gas = await transactionController.sendGasByToken(input.address, input.contract, input.network).then(async (res) => {
+                            await sleep(10000);
+                                channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
+                            });
+                            // channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
+                        }else{
+                            console.log('startou allowance')
+                            var allowed = await transactionController.StartAllowanceByToken(input.address, input.contract, input.network).then(async (res) => {
+                                await sleep(10000);
+                                    channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
+                                } );;
+                            console.log(allowed);
+                        }
+                        //todo reinsert in queue
+                    }else {
+                        const transfer = await transactionController.TransferFromByToken(input.address,balance.balance, input.contract, input.network);
+                        console.log(transfer);
+                        channel.ack(message);
+
+                    }
+                } else{
+                    console.log('balance zerado.');
+                    channel.ack(message);
+                }
+            });
         } catch (error) {
             console.error(error);
         }

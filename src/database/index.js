@@ -3,9 +3,10 @@ import databaseConfig from '../config/database.cjs';
 import Wallet from '../app/models/Wallet.js'
 import Token from '../app/models/Token.js'
 import SystemWallet from '../app/models/SystemWallet.js'
+import NetworkGas from '../app/models/NetworkGas.js'
 import SystemNetwork from '../app/models/SystemNetwork.js'
 import NetworkKey from '../app/models/NetworkKey.js'
-const models = [Wallet, SystemWallet, SystemNetwork, NetworkKey, Token];
+const models = [Wallet, SystemWallet, SystemNetwork, NetworkKey, Token, NetworkGas];
 
 class Database {
   constructor(){

@@ -1,17 +1,79 @@
 import 'dotenv/config';
 import signTx from './src/app/controllers/TransactionController.js';
 import TransactionController from './src/app/controllers/TransactionController.js';
+import GasController from './src/app/controllers/GasController.js';
 import NftController from './src/app/controllers/NftController.js';
 import WalletController from './src/app/controllers/WalletController.js';
 import express from 'express';
 import bodyParser from "body-parser";
 import database from './src/database/index.js';
+import * as cron from 'node-cron';
 
 const transactionController = new TransactionController();
 const walletController = new WalletController();
 const nftController = new NftController();
+const gasController = new GasController();
 
 const app = express();
+
+const cronCheckTransactions = new cron.schedule("* * * * *", async() => {
+  if(cronCheckTransactions.taskRunning){
+    return
+  }
+  cronCheckTransactions.taskRunning = true;
+  try {
+    await walletController.checkReceivedTransactionsByToken();
+  } catch (error) {
+    //
+    cronCheckTransactions.taskRunning = false
+  }
+  cronCheckTransactions.taskRunning = false
+}, {
+  scheduled: false
+});
+
+const cronCheckHookBalance = new cron.schedule("*/10 * * * *", async() => {
+  if(cronCheckHookBalance.taskRunning){
+    return
+  }
+
+  cronCheckHookBalance.taskRunning = true
+  try {
+    await walletController.checkBalanceHookToMaster();
+  } catch (error) {
+    //
+    cronCheckHookBalance.taskRunning = false
+  }
+
+  cronCheckHookBalance.taskRunning = false
+}, {
+  scheduled: false
+});
+
+
+const cronCheckNetworkGas = new cron.schedule("* * * * *", async() => {
+  if(cronCheckNetworkGas.taskRunning){
+    return
+  }
+
+  cronCheckNetworkGas.taskRunning = true
+  try {
+    await gasController.syncGas();
+  } catch (error) {
+    //
+    cronCheckNetworkGas.taskRunning = false;
+  }
+  cronCheckNetworkGas.taskRunning = false;
+}, {
+  scheduled: false
+});
+
+cronCheckHookBalance.start();
+cronCheckNetworkGas.start();
+cronCheckTransactions.start();
+
+
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -19,7 +81,9 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   }));
 
 app.get('/test', async (req, res) => {
-    return await res.send(walletController.test());
+    // return await res.send(walletController.checkReceivedTransactionsByToken());
+    return await res.send(walletController.checkBalanceHookToMaster());
+    // return await res.send(gasController.syncGas());
   });
 
 app.get('/address', async (req, res) => {

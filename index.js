@@ -4,10 +4,12 @@ import TransactionController from './src/app/controllers/TransactionController.j
 import GasController from './src/app/controllers/GasController.js';
 import NftController from './src/app/controllers/NftController.js';
 import WalletController from './src/app/controllers/WalletController.js';
+import SystemWallet from './src/app/models/SystemWallet.js';
 import express from 'express';
 import bodyParser from "body-parser";
 import database from './src/database/index.js';
 import * as cron from 'node-cron';
+import bcrypt from 'bcrypt';
 
 const transactionController = new TransactionController();
 const walletController = new WalletController();
@@ -41,7 +43,6 @@ const cronCheckHookBalance = new cron.schedule("*/10 * * * *", async() => {
   try {
     await walletController.checkBalanceHookToMaster();
   } catch (error) {
-    //
     cronCheckHookBalance.taskRunning = false
   }
 
@@ -49,7 +50,6 @@ const cronCheckHookBalance = new cron.schedule("*/10 * * * *", async() => {
 }, {
   scheduled: false
 });
-
 
 const cronCheckNetworkGas = new cron.schedule("* * * * *", async() => {
   if(cronCheckNetworkGas.taskRunning){
@@ -68,23 +68,63 @@ const cronCheckNetworkGas = new cron.schedule("* * * * *", async() => {
   scheduled: false
 });
 
-cronCheckHookBalance.start();
-cronCheckNetworkGas.start();
-cronCheckTransactions.start();
+// cronCheckHookBalance.start();
+// cronCheckNetworkGas.start();
+// cronCheckTransactions.start();
 
 
+async function masterMiddleware(req, res, next) {
+  const token = req.headers['os-token'];
+  const name = req.headers['os-system'];
+  if(!token){
+    res.status(400).send({
+      status: 'error',
+      message: 'os-token header not set',
+    });
+  }
+  if(!name){
+    res.status(400).send({
+      status: 'error',
+      message: 'os-system header not set'
+    });
+  }
+  const wallet = await SystemWallet.findOne({
+    where: {
+      name: name
+    }
+  });
 
+  if(!wallet){
+    res.status(400).send({
+      status: 'error',
+      message: 'os-system has no matching record on db'
+    });
+  }
 
+  var check = bcrypt.compareSync(token, wallet.token);
+  if(!check){
+      res.status(403).send();
+  }else{
+    req.master = wallet;
+    next()
+  }
+}
+
+app.use(masterMiddleware);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
   }));
 
 app.get('/test', async (req, res) => {
-    // return await res.send(walletController.checkReceivedTransactionsByToken());
-    return await res.send(walletController.checkBalanceHookToMaster());
-    // return await res.send(gasController.syncGas());
-  });
+  // return await res.send(walletController.checkReceivedTransactionsByToken());
+  // return await res.send(walletController.checkBalanceHookToMaster());
+  // return await res.send(gasController.syncGas());
+});
+
+app.get('/newhash', async (req, res) => {
+  return await res.send(gasController.generateHash());
+});
 
 app.get('/address', async (req, res) => {
     return await res.send(walletController.createAddress());
@@ -99,14 +139,12 @@ app.post('/getbalance',async (req, res) => {
   });
 });
 
-
-
 app.post('/getbalanceByToken',async (req, res) => {
   const { address, contract, network } = req.body;
   return res.send({
     status: 'ok',
     message: 'success',
-    data: await walletController.getBalanceByContract(address, contract, network)
+    data: await walletController.getBalanceByContract(address, contract, network, req.master)
   });
 });
 
@@ -115,11 +153,9 @@ app.post('/getMasterBalanceByToken',async (req, res) => {
   return res.send({
     status: 'ok',
     message: 'success',
-    data: await walletController.getMasterBalanceByContract(contract, network)
+    data: await walletController.getMasterBalanceByContract(contract, network, req.master)
   });
 });
-
-
 
 app.post('/getintransactions',async (req, res) => {
   const { address, abbr } = req.body;
@@ -182,10 +218,9 @@ app.post('/send-to', async (req, res) => {
     })
 });
 
-
 app.post('/transferToByToken', async (req, res) => {
     const {target_address, amount, contract, network} = req.body;
-    return await transactionController.TransferToByToken(target_address, amount, contract, network)
+    return await transactionController.TransferToByToken(target_address, amount, contract, network, req.master)
     .then((sign) => {
         return res.send(sign);
     }).catch((error) => {
@@ -195,7 +230,6 @@ app.post('/transferToByToken', async (req, res) => {
         });
     })
 });
-
 
 app.post('/start-allowance', async (req, res) => {
     const {client_address, abbr} = req.body;
@@ -228,7 +262,7 @@ app.post('/sync', async (req, res) => {
     }).catch((error) => {
         console.log(error)
         return res.status(400).send(error.message);
-    }) 
+    })
 });
 
 app.post('/nft/safe-mint', async (req, res) => {
@@ -283,6 +317,11 @@ app.post('/nft/abi', async (req, res) => {
         return res.status(400).send(error.message);
     }) 
 });
+
+
+
+
+
 
 app.listen(process.env.PORT, () =>
     console.log(`App listening on port ${process.env.PORT}!`),

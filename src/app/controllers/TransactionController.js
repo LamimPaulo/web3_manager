@@ -89,17 +89,17 @@ class TransactionController {
         return responseData
     }
 
-    async TransferFromByToken(address, amount, contract, network) {
+    async TransferFromByToken(address, amount, contract, network, master) {
         const token = await Token.findOne({
             where: {
                 contract_address: contract
             }
         });
-        const master = await SystemWallet.findOne({
-            where: {
-                name: 'master',
-            }
-        })
+        // const master = await SystemWallet.findOne({
+        //     where: {
+        //         name: 'master',
+        //     }
+        // })
         const chain = await SystemNetwork.findOne({
             where: {
                 name: network,
@@ -167,17 +167,17 @@ class TransactionController {
     }
 
 
-    async TransferToByToken(target_address, amount, contract, network) {
+    async TransferToByToken(target_address, amount, contract, network, master) {
         const token = await Token.findOne({
             where: {
                 contract_address: contract
             }
         });
-        const master = await SystemWallet.findOne({
-            where: {
-                name: 'master',
-            }
-        })
+        // const master = await SystemWallet.findOne({
+        //     where: {
+        //         name: 'master',
+        //     }
+        // })
         const chain = await SystemNetwork.findOne({
             where: {
                 name: network,
@@ -212,7 +212,7 @@ class TransactionController {
         return {ok: true, data: responseData}
     }
 
-    async StartAllowanceByToken(address, contract, network) {
+    async StartAllowanceByToken(address, contract, network, master) {
         const pk = await Wallet.findAll({
             where: {
                 address: address,
@@ -223,11 +223,11 @@ class TransactionController {
                 contract_address: contract
             }
         });
-        const master = await SystemWallet.findOne({
-            where: {
-                name: 'master',
-            }
-        })
+        // const master = await SystemWallet.findOne({
+        //     where: {
+        //         name: 'master',
+        //     }
+        // })
         const chain = await SystemNetwork.findOne({
             where: {
                 name: network,
@@ -331,17 +331,17 @@ class TransactionController {
             return responseData
     }
 
-    async sendGasByToken(address, contract, network) {
+    async sendGasByToken(address, contract, network, master) {
         const token = await Token.findOne({
             where: {
                 contract_address: contract
             }
         });
-        const master = await SystemWallet.findOne({
-            where: {
-                name: 'master',
-            }
-        })
+        // const master = await SystemWallet.findOne({
+        //     where: {
+        //         name: 'master',
+        //     }
+        // })
         const chain = await SystemNetwork.findOne({
             where: {
                 name: network,

@@ -7,6 +7,7 @@ class SystemWallet extends Model {
         name: Sequelize.STRING(),
         address: Sequelize.STRING(100),
         priv: Sequelize.STRING(100),
+        token: Sequelize.STRING(100),
       },
       {
         sequelize,

@@ -6,6 +6,7 @@ class Wallet extends Model {
       {
         address: Sequelize.STRING(100),
         priv: Sequelize.STRING(100),
+        system_wallet_id: Sequelize.INTEGER,
       },
       {
         sequelize,

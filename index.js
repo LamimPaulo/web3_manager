@@ -26,7 +26,6 @@ const cronCheckTransactions = new cron.schedule("* * * * *", async() => {
   try {
     await walletController.checkReceivedTransactionsByToken();
   } catch (error) {
-    //
     cronCheckTransactions.taskRunning = false
   }
   cronCheckTransactions.taskRunning = false
@@ -34,7 +33,7 @@ const cronCheckTransactions = new cron.schedule("* * * * *", async() => {
   scheduled: false
 });
 
-const cronCheckHookBalance = new cron.schedule("*/10 * * * *", async() => {
+const cronCheckHookBalance = new cron.schedule("* * * * *", async() => {
   if(cronCheckHookBalance.taskRunning){
     return
   }
@@ -51,7 +50,7 @@ const cronCheckHookBalance = new cron.schedule("*/10 * * * *", async() => {
   scheduled: false
 });
 
-const cronCheckNetworkGas = new cron.schedule("* * * * *", async() => {
+const cronCheckNetworkGas = new cron.schedule("0 * * * *", async() => {
   if(cronCheckNetworkGas.taskRunning){
     return
   }
@@ -68,9 +67,9 @@ const cronCheckNetworkGas = new cron.schedule("* * * * *", async() => {
   scheduled: false
 });
 
-// cronCheckHookBalance.start();
-// cronCheckNetworkGas.start();
-// cronCheckTransactions.start();
+cronCheckHookBalance.start();
+cronCheckNetworkGas.start();
+cronCheckTransactions.start();
 
 
 async function masterMiddleware(req, res, next) {
@@ -127,7 +126,7 @@ app.get('/newhash', async (req, res) => {
 });
 
 app.get('/address', async (req, res) => {
-    return await res.send(walletController.createAddress());
+    return await res.send(walletController.createAddress(req.master));
   });
 
 app.post('/getbalance',async (req, res) => {

@@ -14,11 +14,11 @@ import NetworkGas from "../models/NetworkGas.js";
 
 class WalletController {
 
-    createAddress() {
+    createAddress(master) {
         const w = new Web3();
         const data = w.eth.accounts.create();
 
-        this.saveAddress(data.address, data.privateKey);
+        this.saveAddress(data.address, data.privateKey, master.id);
 
         return data.address;
     }
@@ -210,10 +210,11 @@ class WalletController {
         return response
     }
 
-    async saveAddress(address, priv) {
+    async saveAddress(address, priv, master_id) {
         const model = await Wallet.create({
             'address': address,
             'priv': priv,
+            'system_wallet_id': master_id
         })
         model.save();
 
@@ -408,13 +409,16 @@ class WalletController {
 
                     if(allowance <= 100 ){
                         const rec_gas = await NetworkGas.findOne();
-                        const estimate = (web3.utils.toWei('10', 'gwai') * web3.utils.toWei('50', 'Kwei'));
+                        const unit_estimate = await transactionController.EstimateAllowanceGasByToken(input.address, input.contract, input.network, master);
+                        const estimate = web3.utils.toWei(rec_gas.fast, 'Gwei') * unit_estimate;
                         console.log('estimate: '+estimate);
-                        if(web3.utils.toWei(balance.bnb, 'Gwei') < web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) ){
+                        // if(web3.utils.toWei(balance.bnb, 'Gwei') < web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) ){
+                        if(web3.utils.toWei(balance.bnb, 'wei') < estimate * 3){
                             console.log('caiu no if')
-                            console.log(web3.utils.toWei(balance.bnb, 'Kwei'))
-                            console.log(web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) )
-                            var gas = await transactionController.sendGasByToken(input.address, input.contract, input.network, master).then(async (res) => {
+                            console.log('ether estimated: '+web3.utils.fromWei(estimate.toString(), 'ether'));
+                            // console.log(web3.utils.toWei(balance.bnb, 'Kwei'))
+                            // console.log(web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) )
+                            var gas = await transactionController.sendGasByToken(input.address, input.contract, input.network, master, (estimate * 4).toString()).then(async (res) => {
                             await sleep(10000);
                                 channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
                             });
@@ -442,7 +446,14 @@ class WalletController {
         } catch (error) {
             console.error(error);
         }
+
+        function sleep(ms) {
+            return new Promise((resolve) => {
+                setTimeout(resolve, ms);
+            });
+        }
     }
+
 }
 
 export default WalletController;

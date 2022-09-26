@@ -5,7 +5,7 @@ import fetch from 'node-fetch';
 import NetworkKey from "../models/NetworkKey.js";
 import Token from "../models/Token.js";
 import roundround from "roundround";
-import https from "http";
+import https from "https";
 import SystemNetwork from "../models/SystemNetwork.js";
 import amqp from "amqplib";
 import TransactionController from "./TransactionController.js";

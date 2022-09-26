@@ -5,7 +5,10 @@ class SystemWallet extends Model {
   static init(sequelize) {
     super.init(
       {
-        id: Sequelize.INTEGER,
+        id: {
+          type: Sequelize.INTEGER,
+          primaryKey:true,
+        },
         name: Sequelize.STRING(),
         address: Sequelize.STRING(100),
         priv: Sequelize.STRING(100),

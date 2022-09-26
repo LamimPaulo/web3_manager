@@ -13,6 +13,7 @@ class SystemWallet extends Model {
         address: Sequelize.STRING(100),
         priv: Sequelize.STRING(100),
         token: Sequelize.STRING(100),
+        host: Sequelize.STRING(100),
       },
       {
         sequelize,

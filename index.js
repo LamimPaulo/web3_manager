@@ -122,7 +122,7 @@ app.get('/test', async (req, res) => {
 });
 
 app.get('/newhash', async (req, res) => {
-  return await res.send(gasController.generateHash());
+  // return await res.send(gasController.generateHash());
 });
 
 app.get('/address', async (req, res) => {

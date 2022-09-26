@@ -327,13 +327,13 @@ class WalletController {
                                 r.network = network.name
                                 try{
                                     const master = await SystemWallet.findOne({
-                                        where:{
-                                            id: wallet.system_wallet_id
+                                        where: {
+                                            id: wallet.system_wallet_id,
                                         }
                                     })
 
                                     console.log(JSON.stringify(r));
-                                    console.log('master: '+master.host );
+                                    console.log('master host: '+master.name );
                                     const notified = await this.notifyExchange(JSON.stringify(r), master.host);
                                 }catch(error){
                                     console.log(error);

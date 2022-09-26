@@ -326,7 +326,7 @@ class WalletController {
                                 r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
                                 r.network = network.name
 
-                                //TODO identify master wallet to notify correct address
+                                console.log(JSON.stringify(r));
                                 const notified = await this.notifyExchange(JSON.stringify(r), master.host);
                             }
                         };

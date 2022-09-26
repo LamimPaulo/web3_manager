@@ -327,11 +327,7 @@ class WalletController {
                                 r.network = network.name
                                 try{
 
-                                    const master = await SystemWallet.findOne({
-                                        where: {
-                                            id: 1,
-                                        }
-                                    });
+                                    const master = await SystemWallet.findByPk(wallet.system_wallet_id);
 
 
                                     console.log(JSON.stringify(r));

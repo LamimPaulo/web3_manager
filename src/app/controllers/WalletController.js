@@ -355,20 +355,20 @@ class WalletController {
             const req = await https.request(options, res => {
 
                 res.on('data', d => {
-                    // console.warn(d)
+                    console.warn(d)
                     process.stdout.write(d);
                     return d;
                 });
             });
 
 
-            await req.on('error', error => {
+            req.on('error', error => {
                 return error;
             });
 
-            await req.write(data);
-            await req.end();
-            return await req
+             req.write(data);
+             req.end();
+            return  req
         } catch (error) {
             console.error(error);
         }

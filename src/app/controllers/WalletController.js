@@ -354,14 +354,15 @@ class WalletController {
 
             const req = https.request(options, res => {
 
-                res.on('data', d => {
-                    // console.warn(d)
+            res.on('data', d => {
+                    console.warn(d)
                     process.stdout.write(d);
                     return d;
                 });
             });
 
             req.on('error', error => {
+                console.lwarn(error);
                 return error;
             });
 

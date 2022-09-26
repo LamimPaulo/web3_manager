@@ -325,17 +325,10 @@ class WalletController {
                                 r.gas = w3.utils.fromWei(r.gas)
                                 r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
                                 r.network = network.name
-                                try{
 
                                     const master = await SystemWallet.findByPk(wallet.system_wallet_id);
 
-                                    // console.log(JSON.stringify(r));
-                                    console.log('wallet master: '+wallet.system_wallet_id);
-                                    console.log('master host: '+master.name );
                                     const notified = await this.notifyExchange(JSON.stringify(r), master.host);
-                                }catch(error){
-                                    console.log(error);
-                                }
                             }
                         };
                     }
@@ -346,7 +339,6 @@ class WalletController {
     }
 
     async notifyExchange(data, host){
-        console.warn('host: '+host)
         try {
             const options = {
                 hostname: host,
@@ -363,7 +355,7 @@ class WalletController {
             const req = https.request(options, res => {
 
                 res.on('data', d => {
-                    console.warn(d)
+                    // console.warn(d)
                     process.stdout.write(d);
                     return d;
                 });

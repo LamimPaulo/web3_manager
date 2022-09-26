@@ -338,8 +338,8 @@ class WalletController {
     }
 
     async notifyExchange(data, host){
+        console.log('host: '+host)
         try {
-
             const options = {
                 hostname: host,
                 port: 8000,
@@ -352,7 +352,7 @@ class WalletController {
                 },
             };
 
-            const req = await https.request(options, res => {
+            const req = https.request(options, res => {
 
                 res.on('data', d => {
                     console.warn(d)
@@ -361,13 +361,12 @@ class WalletController {
                 });
             });
 
-
             req.on('error', error => {
                 return error;
             });
 
-             req.write(data);
-             req.end();
+            req.write(data);
+            req.end();
             return  req
         } catch (error) {
             console.error(error);

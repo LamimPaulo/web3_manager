@@ -327,7 +327,7 @@ class WalletController {
                                 r.network = network.name
 
                                 //TODO identify master wallet to notify correct address
-                                const notified = await this.notifyExchange(JSON.stringify(r), 'localhost');
+                                const notified = await this.notifyExchange(JSON.stringify(r), master.host);
                             }
                         };
                     }

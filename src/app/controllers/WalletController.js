@@ -342,7 +342,7 @@ class WalletController {
         try {
             const options = {
                 hostname: host,
-                port: 8000,
+                port: 443,
                 path: '/api/evmNotify',
                 method: 'POST',
                 headers: {

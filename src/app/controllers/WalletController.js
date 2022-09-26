@@ -313,6 +313,12 @@ class WalletController {
                     headers: {'Content-Type': 'application/json'}
                     });
 
+                    const master = await SystemWallet.findOne({
+                        where: {
+                            id: 1,
+                        }
+                    })
+
                     const res = await response.json();
                     if(res.result){
                         for(const r of res.result) {
@@ -326,11 +332,7 @@ class WalletController {
                                 r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
                                 r.network = network.name
                                 try{
-                                    const master = await SystemWallet.findOne({
-                                        where: {
-                                            id: 1,
-                                        }
-                                    })
+
 
                                     console.log(JSON.stringify(r));
                                     console.log('master host: '+master.name );

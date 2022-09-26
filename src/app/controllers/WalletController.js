@@ -338,7 +338,7 @@ class WalletController {
     }
 
     async notifyExchange(data, host){
-        console.log('host: '+host)
+        console.warn('host: '+host)
         try {
             const options = {
                 hostname: host,

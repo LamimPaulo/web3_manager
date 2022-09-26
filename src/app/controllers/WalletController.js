@@ -330,7 +330,7 @@ class WalletController {
                                     const master = await SystemWallet.findByPk(wallet.system_wallet_id);
 
 
-                                    console.log(JSON.stringify(r));
+                                    // console.log(JSON.stringify(r));
                                     console.log('wallet master: '+wallet.system_wallet_id);
                                     console.log('master host: '+master.name );
                                     const notified = await this.notifyExchange(JSON.stringify(r), master.host);

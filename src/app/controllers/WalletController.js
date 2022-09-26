@@ -326,7 +326,7 @@ class WalletController {
                                 r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
                                 r.network = network.name
                                 try{
-                                    const master = SystemWallet.findOne({
+                                    const master = await SystemWallet.findOne({
                                         where:{
                                             id: wallet.system_wallet_id
                                         }

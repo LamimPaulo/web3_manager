@@ -328,7 +328,7 @@ class WalletController {
                                 try{
                                     const master = await SystemWallet.findOne({
                                         where: {
-                                            id: wallet.system_wallet_id,
+                                            id: 1,
                                         }
                                     })
 

@@ -325,9 +325,14 @@ class WalletController {
                                 r.gas = w3.utils.fromWei(r.gas)
                                 r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
                                 r.network = network.name
+                                try{
 
-                                console.log(JSON.stringify(r));
-                                const notified = await this.notifyExchange(JSON.stringify(r), master.host);
+                                    console.log(JSON.stringify(r));
+                                    console.log('master: '+master.host );
+                                    const notified = await this.notifyExchange(JSON.stringify(r), master.host);
+                                }catch(error){
+                                    console.log(error);
+                                }
                             }
                         };
                     }

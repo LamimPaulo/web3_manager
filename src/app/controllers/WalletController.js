@@ -362,7 +362,7 @@ class WalletController {
             });
 
             req.on('error', error => {
-                console.lwarn(error);
+                console.warn(error);
                 return error;
             });
 

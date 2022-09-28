@@ -29,7 +29,7 @@ class GasController {
             //coinage => a554ef17-6071-4a2d-8ca2-9d0fa227a571
             //infinityhub => 24a52d38-b309-42c3-bd0d-5635f61cdc45
 
-            const token = "a554ef17-6071-4a2d-8ca2-9d0fa227a571"
+            const token = "24a52d38-b309-42c3-bd0d-5635f61cdc45"
 
             var salt = bcrypt.genSaltSync(10);
             var hash = bcrypt.hashSync(token, salt);

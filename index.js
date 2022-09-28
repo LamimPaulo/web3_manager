@@ -122,7 +122,7 @@ app.get('/test', async (req, res) => {
 });
 
 app.get('/newhash', async (req, res) => {
-  // return await res.send(gasController.generateHash());
+  return await res.send(gasController.generateHash());
 });
 
 app.get('/address', async (req, res) => {
@@ -220,6 +220,20 @@ app.post('/send-to', async (req, res) => {
 app.post('/transferToByToken', async (req, res) => {
     const {target_address, amount, contract, network} = req.body;
     return await transactionController.TransferToByToken(target_address, amount, contract, network, req.master)
+    .then((sign) => {
+        return res.send(sign);
+    }).catch((error) => {
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/TransferNoGasBRLFromInfinityWallet', async (req, res) => {
+    const {target_address, amount} = req.body;
+    console.log('test');
+    return await transactionController.TransferNoGasBRLFromInfinityWallet(target_address, amount, req.master)
     .then((sign) => {
         return res.send(sign);
     }).catch((error) => {

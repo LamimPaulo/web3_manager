@@ -138,6 +138,15 @@ app.post('/getbalance',async (req, res) => {
   });
 });
 
+app.post('/mintBrl',async (req, res) => {
+  const { amount } = req.body;
+  return res.send({
+    status: 'ok',
+    message: 'success',
+    data: await transactionController.mintBrl(amount, req.master)
+  });
+});
+
 app.post('/getbalanceByToken',async (req, res) => {
   const { address, contract, network } = req.body;
   return res.send({

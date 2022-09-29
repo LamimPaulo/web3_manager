@@ -241,8 +241,20 @@ app.post('/transferToByToken', async (req, res) => {
 
 app.post('/TransferNoGasBRLFromInfinityWallet', async (req, res) => {
     const {target_address, amount} = req.body;
-    console.log('test');
     return await transactionController.TransferNoGasBRLFromInfinityWallet(target_address, amount, req.master)
+    .then((sign) => {
+        return res.send(sign);
+    }).catch((error) => {
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/TransferNoGasBRLToInfinityWallet', async (req, res) => {
+    const {target_address, amount} = req.body;
+    return await transactionController.TransferNoGasBRLToInfinityWallet(target_address, amount, req.master)
     .then((sign) => {
         return res.send(sign);
     }).catch((error) => {

@@ -34,17 +34,14 @@ const cronCheckTransactions = new cron.schedule("*/10 * * * *", async() => {
 });
 
 const cronCheckHookBalance = new cron.schedule("* * * * *", async() => {
-  if(cronCheckHookBalance.taskRunning){
-    return
+  if(!cronCheckHookBalance.taskRunning){
+    cronCheckHookBalance.taskRunning = true
+    try {
+      await walletController.checkBalanceHookToMaster();
+    } catch (error) {
+      cronCheckHookBalance.taskRunning = false
+    }
   }
-
-  cronCheckHookBalance.taskRunning = true
-  try {
-    await walletController.checkBalanceHookToMaster();
-  } catch (error) {
-    cronCheckHookBalance.taskRunning = false
-  }
-
   cronCheckHookBalance.taskRunning = false
 }, {
   scheduled: false

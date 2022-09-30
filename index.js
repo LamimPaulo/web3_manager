@@ -42,7 +42,7 @@ const cronCheckHookBalance = new cron.schedule("* * * * *", async() => {
       cronCheckHookBalance.taskRunning = false
     }
   }
-  cronCheckHookBalance.taskRunning = false
+  // cronCheckHookBalance.taskRunning = false
 }, {
   scheduled: false
 });

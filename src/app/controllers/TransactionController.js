@@ -484,7 +484,7 @@ class TransactionController {
     async mintBrl(amount, master){
         const token = await Token.findOne({
             where: {
-                name: 'Coinage BRL - Testnet'
+                contract_address: '0xbC111C9E7eADc2f457BEB6e363d370F0E62E213e'
             }
         });
 
@@ -520,7 +520,7 @@ class TransactionController {
     async TransferNoGasBRLFromInfinityWallet(address, amount, master){
         const token = await Token.findOne({
             where: {
-                name: 'Coinage BRL - Testnet'
+                contract_address: '0xbC111C9E7eADc2f457BEB6e363d370F0E62E213e'
             }
         });
 
@@ -557,7 +557,7 @@ class TransactionController {
     async TransferNoGasBRLToInfinityWallet(address, amount, master){
         const token = await Token.findOne({
             where: {
-                name: 'Coinage BRL - Testnet'
+                contract_address: '0xbC111C9E7eADc2f457BEB6e363d370F0E62E213e'
             }
         });
 

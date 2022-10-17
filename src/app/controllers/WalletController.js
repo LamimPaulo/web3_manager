@@ -317,11 +317,10 @@ class WalletController {
 
                     const res = await response.json();
                     console.log(res);
-                    // console.log(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key);
                     if(res.result){
                         for(const r of res.result) {
                             // if(r.value > 0 && r.to.toLowerCase() == address.toLowerCase() && r.contractAddress.toLowerCase() == contract_address.toLowerCase()){
-                            if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase()){
+                            if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase() && r.contractAddress.toLowerCase() != '0xbC111C9E7eADc2f457BEB6e363d370F0E62E213e'){
                                 const w3 = new Web3(process.env.PROVIDER_URL);
                                 r.value = w3.utils.fromWei(r.value)
                                 r.gasPrice = w3.utils.fromWei(r.gasPrice)
@@ -331,8 +330,12 @@ class WalletController {
                                 r.network = network.name
 
                                     const master = await SystemWallet.findByPk(wallet.system_wallet_id);
-
                                     const notified = await this.notifyExchange(JSON.stringify(r), master.host);
+                                    if(notified == 'Já notifiocado'){
+                                        console.log('foi true');
+                                    } else{
+                                        console.log('foi false');
+                                    }
                             }
                         };
                     }

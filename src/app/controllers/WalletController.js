@@ -314,12 +314,11 @@ class WalletController {
                     });
 
                     const res = await response.json();
-                    console.log(res);
                     if(res.result){
                         for(const r of res.result) {
                             // if(r.value > 0 && r.to.toLowerCase() == address.toLowerCase() && r.contractAddress.toLowerCase() == contract_address.toLowerCase()){
                             if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase()){
-                                if(r.contractAddress == '0xbC111C9E7eADc2f457BEB6e363d370F0E62E213e'){
+                                if(r.contractAddress == '0xbc111c9e7eadc2f457beb6e363d370f0e62e213e'){
                                     console.log('CBRL ignored')
 
                                 }

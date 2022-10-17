@@ -314,6 +314,7 @@ class WalletController {
                     });
 
                     const res = await response.json();
+                    console.log(res);
                     if(res.result){
                         for(const r of res.result) {
                             // if(r.value > 0 && r.to.toLowerCase() == address.toLowerCase() && r.contractAddress.toLowerCase() == contract_address.toLowerCase()){

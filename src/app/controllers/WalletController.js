@@ -318,22 +318,31 @@ class WalletController {
                     if(res.result){
                         for(const r of res.result) {
                             // if(r.value > 0 && r.to.toLowerCase() == address.toLowerCase() && r.contractAddress.toLowerCase() == contract_address.toLowerCase()){
-                            if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase() && r.contractAddress != '0xbC111C9E7eADc2f457BEB6e363d370F0E62E213e'){
-                                const w3 = new Web3(process.env.PROVIDER_URL);
-                                r.value = w3.utils.fromWei(r.value)
-                                r.gasPrice = w3.utils.fromWei(r.gasPrice)
-                                r.gasUsed = w3.utils.fromWei(r.gasUsed)
-                                r.gas = w3.utils.fromWei(r.gas)
-                                r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
-                                r.network = network.name
+                            if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase()){
+                                if(r.contractAddress == '0xbC111C9E7eADc2f457BEB6e363d370F0E62E213e'){
+                                    console.log('CBRL ignored')
 
+                                }
+                                else{
+                                    console.log('contractAddress');
+                                    console.log(r.contractAddress);
+                                    const w3 = new Web3(process.env.PROVIDER_URL);
+                                    r.value = w3.utils.fromWei(r.value)
+                                    r.gasPrice = w3.utils.fromWei(r.gasPrice)
+                                    r.gasUsed = w3.utils.fromWei(r.gasUsed)
+                                    r.gas = w3.utils.fromWei(r.gas)
+                                    r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
+                                    r.network = network.name
+    
                                     const master = await SystemWallet.findByPk(wallet.system_wallet_id);
                                     const notified = await this.notifyExchange(JSON.stringify(r), master.host);
+                                    
                                     if(notified == 'Já notifiocado'){
                                         console.log('foi true');
                                     } else{
                                         console.log('foi false');
                                     }
+                                }
                             }
                         };
                     }

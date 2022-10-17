@@ -297,7 +297,8 @@ class WalletController {
                     const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
                     const token_balance = await web3_token.methods.balanceOf(wallet.address).call()
 
-                    if(token_balance > 0 && token.name != 'CBRL'){
+                    // if(token_balance > 0 && token.name != 'CBRL'){
+                    if(token_balance > 0){
                         balance++;
                     }
 
@@ -322,7 +323,6 @@ class WalletController {
                             if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase()){
                                 if(r.contractAddress == '0xbc111c9e7eadc2f457beb6e363d370f0e62e213e'){
                                     console.log('CBRL ignored')
-
                                 }
                                 else{
                                     console.log('contractAddress');

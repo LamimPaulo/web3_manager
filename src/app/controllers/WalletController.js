@@ -378,7 +378,7 @@ class WalletController {
         try {
             const opt = { credentials: amqp.credentials.plain('admin', 'N@videv1') };
 
-            const connection = await amqp.connect("amqp://177.38.215.101:5672", opt);
+            const connection = await amqp.connect("amqp://"+process.env.AMQP_ADDR+":5672", opt);
             const channel = await connection.createChannel();
             await channel.assertQueue("ex.token_balance_hook");
             channel.consume("ex.token_balance_hook", async message => {

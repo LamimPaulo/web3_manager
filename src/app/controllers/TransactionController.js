@@ -118,8 +118,8 @@ class TransactionController {
         const rawTransaction = {
             from: master.address,
             to: token.contract_address,
-            gas: web3.utils.toHex(web3.utils.toWei('50', 'Kwei')),
             gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
+            gas: web3.utils.toHex(1000000),
             data: contractData,
         }
 
@@ -154,8 +154,8 @@ class TransactionController {
         const rawTransaction = {
             from: pk.address,
             to: contractAddress,
-            gas: web3.utils.toHex(1000000),
             gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
+            gas: web3.utils.toHex(1000000),
             data: contractData,
         }
 

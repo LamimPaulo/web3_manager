@@ -77,7 +77,7 @@ class TransactionController {
         const rawTransaction = {
             from: pk.address,
             to: contractAddress,
-            gas: web3.utils.toHex(1000000),
+            gas: web3.utils.toHex(77806),
             gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
             data: contractData,
         }
@@ -119,7 +119,7 @@ class TransactionController {
             from: master.address,
             to: token.contract_address,
             gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
-            gas: web3.utils.toHex(1000000),
+            gas: web3.utils.toHex(77806),
             data: contractData,
         }
 
@@ -155,7 +155,7 @@ class TransactionController {
             from: pk.address,
             to: contractAddress,
             gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
-            gas: web3.utils.toHex(1000000),
+            gas: web3.utils.toHex(77806),
             data: contractData,
         }
 
@@ -201,7 +201,7 @@ class TransactionController {
             // maxPriorityFeePerGas: 250000000000,
             // gas: 21000,
             gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
-            gas: web3.utils.toHex(1000000),
+            gas: web3.utils.toHex(77806),
             data: contractData,
         }
 
@@ -507,7 +507,7 @@ class TransactionController {
             from: master.address,
             to: token.contract_address,
             gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
-            gas: web3.utils.toHex(1000000),
+            gas: web3.utils.toHex(77806),
             data: contractData,
         }
 
@@ -544,7 +544,7 @@ class TransactionController {
             from: master.address,
             to: token.contract_address,
             gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
-            gas: web3.utils.toHex(1000000),
+            gas: web3.utils.toHex(77806),
             data: contractData,
         }
 
@@ -581,7 +581,7 @@ class TransactionController {
             from: master.address,
             to: token.contract_address,
             gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
-            gas: web3.utils.toHex(1000000),
+            gas: web3.utils.toHex(77806),
             data: contractData,
         }
 

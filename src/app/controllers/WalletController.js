@@ -315,6 +315,7 @@ class WalletController {
 
                     const res = await response.json();
                     console.log(res);
+                    console.log(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key);
                     if(res.result){
                         for(const r of res.result) {
                             // if(r.value > 0 && r.to.toLowerCase() == address.toLowerCase() && r.contractAddress.toLowerCase() == contract_address.toLowerCase()){

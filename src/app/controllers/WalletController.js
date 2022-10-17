@@ -296,9 +296,11 @@ class WalletController {
                 for(const token of tokens){
                     const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
                     const token_balance = await web3_token.methods.balanceOf(wallet.address).call()
-                    if(token_balance > 0){
+
+                    if(token_balance > 0 && token.name != 'CBRL'){
                         balance++;
                     }
+
                     console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(token_balance)+' '+token.name);
                 }
 

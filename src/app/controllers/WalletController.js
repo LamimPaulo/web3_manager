@@ -121,29 +121,16 @@ class WalletController {
         return filtered
     }
 
-    async getBalance(address, abbr) {
-        const web3 = new Web3(process.env.PROVIDER_URL);
-        const balance = await web3.eth.getBalance(address);
-        var usdtBalance = 0
-        var contract_address = await this.getContract(abbr)
-        var contract_abi = await this.getABI(abbr)
-
-        const usdt = new web3.eth.Contract(JSON.parse(contract_abi), contract_address);
-        usdtBalance = await usdt.methods.balanceOf(address).call()
-
-        if(abbr == 'NFT'){
-            return {
-                bnb: await web3.utils.fromWei(balance),
-                usdt: await usdtBalance
+    async getBalance(address, network) {
+        const chain = await SystemNetwork.findOne({
+            where: {
+                name: network,
             }
-        } else {
-            return {
-                bnb: await web3.utils.fromWei(balance),
-                usdt: await web3.utils.fromWei(usdtBalance)
-            }
-        }
+        });
 
-        // return data
+        const web3 = new Web3(chain.provider);
+        const balance = (await web3.eth.getBalance(address));
+        return balance
     }
 
     async getSystemBalance() {
@@ -167,37 +154,13 @@ class WalletController {
         return data
     }
 
-    async getAllowance(owner, abbr) {
-        var contract_address = await this.getContract(abbr)
-        var contract_abi = await this.getABI(abbr)
-
-        const web3 = new Web3(process.env.PROVIDER_URL);
-        const master = await SystemWallet.findOne({where: {name: 'master'}})
-
-        if(abbr == 'NFT'){
-            const usdt = new web3.eth.Contract(JSON.parse(contract_abi), contract_address);
-            const response = await usdt.methods.isApprovedForAll(owner, master.address).call()
-            console.log(response)
-            return response
-        } else{
-            const usdt = new web3.eth.Contract(JSON.parse(contract_abi), contract_address);
-            const response = await usdt.methods.allowance(owner, master.address).call()
-            console.log(response)
-            return response
-        }
-    }
-
     async getAllowanceByToken(address, contract, network, master) {
         const token = await Token.findOne({
             where: {
                 contract_address: contract
             }
         });
-        // const master = await SystemWallet.findOne({
-        //     where: {
-        //         name: 'master',
-        //     }
-        // })
+
         const chain = await SystemNetwork.findOne({
             where: {
                 name: network,
@@ -293,40 +256,30 @@ class WalletController {
                 const web3 = new Web3(network.provider);
                 var balance = 0
 
-                for(const token of tokens){
-                    const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
-                    const token_balance = await web3_token.methods.balanceOf(wallet.address).call()
+                const chain_balance = await (web3.eth.getBalance(wallet.address));
+                console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(chain_balance)+' '+network.name);
 
-                    if(token_balance > 0 && token.name != 'CBRL'){
-                    // if(token_balance > 0){
-                        balance++;
-                    }
+                if(web3.utils.fromWei(chain_balance) >= 0.2){
 
-                    console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(token_balance)+' '+token.name);
-                }
-
-
-                if(balance > 0){
-                    //bnb - eth
-                // const response = await fetch(key.url+'api?module=account&action=txlist'+'&address='+address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+key.key, {
-
-                //tokens
-                const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key, {
-                    method: 'get',
-                    headers: {'Content-Type': 'application/json'}
+                    // const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey=' {
+                    const response = await fetch(next().url+'api?module=account&action=txlist'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key, {
+                        method: 'get',
+                        headers: {'Content-Type': 'application/json'}
                     });
 
                     const res = await response.json();
                     if(res.result){
+                        const sWallet = await SystemWallet.findAll();
                         for(const r of res.result) {
-                            // if(r.value > 0 && r.to.toLowerCase() == address.toLowerCase() && r.contractAddress.toLowerCase() == contract_address.toLowerCase()){
                             if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase()){
-                                if(r.contractAddress == '0xbc111c9e7eadc2f457beb6e363d370f0e62e213e'){
+                                for( const sw of sWallet){
+                                    if(r.from.toLowerCase == sw.address){
+                                    }
+                                }
+                                if(r.from.toLowerCase == '0xbc111c9e7eadc2f457beb6e363d370f0e62e213e'){
                                     console.log('CBRL ignored')
                                 }
                                 else{
-                                    console.log('contractAddress');
-                                    console.log(r.contractAddress);
                                     const w3 = new Web3(process.env.PROVIDER_URL);
                                     r.value = w3.utils.fromWei(r.value)
                                     r.gasPrice = w3.utils.fromWei(r.gasPrice)
@@ -334,11 +287,12 @@ class WalletController {
                                     r.gas = w3.utils.fromWei(r.gas)
                                     r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
                                     r.network = network.name
-    
+                                    r.contractAddress = network.name
+
                                     const master = await SystemWallet.findByPk(wallet.system_wallet_id);
                                     const notified = await this.notifyExchange(JSON.stringify(r), master.host);
-                                    
-                                    if(notified == 'Já notifiocado'){
+
+                                    if(notified == 'Já notificado'){
                                         console.log('foi true');
                                     } else{
                                         console.log('foi false');
@@ -347,7 +301,59 @@ class WalletController {
                             }
                         };
                     }
-                }
+
+                };
+
+                // for(const token of tokens){
+                //     const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
+                //     const token_balance = await web3_token.methods.balanceOf(wallet.address).call()
+
+                //     if(token_balance > 0 && token.name != 'CBRL'){
+                //     // if(token_balance > 0){
+                //         balance++;
+                //     }
+
+                //     console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(token_balance)+' '+token.name);
+                // }
+
+                // if(balance > 0){
+                //     const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key, {
+                //         method: 'get',
+                //         headers: {'Content-Type': 'application/json'}
+                //     });
+
+                //     const res = await response.json();
+                //     if(res.result){
+                //         for(const r of res.result) {
+                //             // if(r.value > 0 && r.to.toLowerCase() == address.toLowerCase() && r.contractAddress.toLowerCase() == contract_address.toLowerCase()){
+                //             if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase()){
+                //                 if(r.contractAddress == '0xbc111c9e7eadc2f457beb6e363d370f0e62e213e'){
+                //                     console.log('CBRL ignored')
+                //                 }
+                //                 else{
+                //                     console.log('contractAddress');
+                //                     console.log(r.contractAddress);
+                //                     const w3 = new Web3(process.env.PROVIDER_URL);
+                //                     r.value = w3.utils.fromWei(r.value)
+                //                     r.gasPrice = w3.utils.fromWei(r.gasPrice)
+                //                     r.gasUsed = w3.utils.fromWei(r.gasUsed)
+                //                     r.gas = w3.utils.fromWei(r.gas)
+                //                     r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
+                //                     r.network = network.name
+
+                //                     const master = await SystemWallet.findByPk(wallet.system_wallet_id);
+                //                     const notified = await this.notifyExchange(JSON.stringify(r), master.host);
+
+                //                     if(notified == 'Já notifiocado'){
+                //                         console.log('foi true');
+                //                     } else{
+                //                         console.log('foi false');
+                //                     }
+                //                 }
+                //             }
+                //         };
+                //     }
+                // }
             };
         };
         return true;
@@ -410,52 +416,67 @@ class WalletController {
                     }
                 })
 
+                // "{\"address\":\"0x3661431F9c87d6826351dC3ACcaed8956150BBe4\",\"contract\":\"BEP20\",\"network\":\"BEP20\"}"
                 const web3 = new Web3();
                 const transactionController = new TransactionController();
-
-                const balance = await this.getBalanceByContract(input.address, input.contract, input.network);
-                console.log(balance);
-                console.log(web3.utils.fromWei(balance.balance));
-                if(balance.balance > 0){
-                    const allowance = await this.getAllowanceByToken(input.address, input.contract, input.network, master);
-
-                    console.log('allowance');
-                    console.log(allowance);
-
-                    if(allowance <= 100 ){
-                        const rec_gas = await NetworkGas.findOne();
-                        const unit_estimate = await transactionController.EstimateAllowanceGasByToken(input.address, input.contract, input.network, master);
-                        const estimate = web3.utils.toWei(rec_gas.fast, 'Gwei') * unit_estimate;
-                        console.log('estimate: '+estimate);
-                        // if(web3.utils.toWei(balance.bnb, 'Gwei') < web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) ){
-                        if(web3.utils.toWei(balance.bnb, 'wei') < estimate * 3){
-                            console.log('caiu no if')
-                            console.log('ether estimated: '+web3.utils.fromWei(estimate.toString(), 'ether'));
-                            // console.log(web3.utils.toWei(balance.bnb, 'Kwei'))
-                            // console.log(web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) )
-                            var gas = await transactionController.sendGasByToken(input.address, input.contract, input.network, master, (estimate * 4).toString()).then(async (res) => {
-                            await sleep(10000);
-                                channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
-                            });
-                            // channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
-                        }else{
-                            console.log('startou allowance')
-                            var allowed = await transactionController.StartAllowanceByToken(input.address, input.contract, input.network, master).then(async (res) => {
-                                await sleep(10000);
-                                    channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
-                                } );;
-                            console.log(allowed);
-                        }
-                        //todo reinsert in queue
-                    }else {
-                        const transfer = await transactionController.TransferFromByToken(input.address,balance.balance, input.contract, input.network, master);
+                if(input.contract == 'BEP20' ||input.contract == 'ERC20'){
+                    const balance = await this.getBalance(input.address, input.network);
+                    
+                    
+                    
+                    if(balance >= 0){
+                        console.log((balance));;
+                        console.log(balance - (balance / 40));
+                        const transfer = await transactionController.transfer(input.address, input.network, (balance - (balance / 20)).toString(), master.address);
                         console.log(transfer);
                         channel.ack(message);
 
                     }
-                } else{
-                    console.log('balance zerado.');
-                    channel.ack(message);
+                }else {
+                    const balance = await this.getBalanceByContract(input.address, input.contract, input.network);
+                    console.log(balance);
+                    console.log(web3.utils.fromWei(balance.balance));
+                    if(balance.balance > 0){
+                        const allowance = await this.getAllowanceByToken(input.address, input.contract, input.network, master);
+
+                        console.log('allowance');
+                        console.log(allowance);
+
+                        if(allowance <= 100 ){
+                            const rec_gas = await NetworkGas.findOne();
+                            const unit_estimate = await transactionController.EstimateAllowanceGasByToken(input.address, input.contract, input.network, master);
+                            const estimate = web3.utils.toWei(rec_gas.fast, 'Gwei') * unit_estimate;
+                            console.log('estimate: '+estimate);
+                            // if(web3.utils.toWei(balance.bnb, 'Gwei') < web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) ){
+                            if(web3.utils.toWei(balance.bnb, 'wei') < estimate * 3){
+                                console.log('caiu no if')
+                                console.log('ether estimated: '+web3.utils.fromWei(estimate.toString(), 'ether'));
+                                // console.log(web3.utils.toWei(balance.bnb, 'Kwei'))
+                                // console.log(web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) )
+                                var gas = await transactionController.sendGasByToken(input.address, input.contract, input.network, master, (estimate * 4).toString()).then(async (res) => {
+                                await sleep(10000);
+                                    channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
+                                });
+                                // channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
+                            }else{
+                                console.log('startou allowance')
+                                var allowed = await transactionController.StartAllowanceByToken(input.address, input.contract, input.network, master).then(async (res) => {
+                                    await sleep(10000);
+                                        channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
+                                    } );
+                                console.log(allowed);
+                            }
+                            //todo reinsert in queue
+                        }else {
+                            const transfer = await transactionController.TransferFromByToken(input.address, balance.balance, input.contract, input.network, master);
+                            console.log(transfer);
+                            channel.ack(message);
+                        }
+                    } else{
+                        console.log('balance zerado.');
+                        channel.ack(message);
+                    }
+
                 }
             });
         } catch (error) {

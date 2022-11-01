@@ -259,6 +259,34 @@ class TransactionController {
         return responseData
     }
 
+    async EstimateAllowanceGas(address, network, master, value) {
+        const pk = await Wallet.findAll({
+            where: {
+                address: address,
+            }
+        });
+
+        const chain = await SystemNetwork.findOne({
+            where: {
+                name: network,
+            }
+        });
+
+        var web3 = new Web3(chain.provider);
+        web3.defaultAccount = pk[0].address
+
+        const data = new web3.eth.estimateGas({
+            from: address,
+            to: master.address,
+            value: value
+        });
+
+        var privKey = pk[0].priv
+        var privKey = privKey.substr(2)
+
+        return data
+    }
+
     async EstimateAllowanceGasByToken(address, contract, network, master) {
         const pk = await Wallet.findAll({
             where: {
@@ -383,11 +411,6 @@ class TransactionController {
                 contract_address: contract
             }
         });
-        // const master = await SystemWallet.findOne({
-        //     where: {
-        //         name: 'master',
-        //     }
-        // })
         const chain = await SystemNetwork.findOne({
             where: {
                 name: network,
@@ -417,6 +440,41 @@ class TransactionController {
         } else{
             throw new Error('Saldo na carteira master insuficiente para enviar gas!')
         }
+    }
+
+    async transfer(address, network, value, to) {
+        const chain = await SystemNetwork.findOne({
+            where: {
+                name: network,
+            }
+        });
+        const rec_gas = await NetworkGas.findOne();
+
+        const web3 = new Web3(chain.provider);
+        const pk = await Wallet.findOne({
+            where: {
+                address: address,
+            }
+        });
+        web3.defaultAccount = pk.address
+
+        console.log('to be hooked: '+ web3.utils.fromWei(value));
+        // if(web3.utils.fromWei(master_balance) > web3.utils.fromWei(value)){
+            const rawTransaction = {
+                to: to,
+                gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
+                gas: web3.utils.toHex(50000),
+                value: web3.utils.toHex(value),
+            }
+
+            const signed = await web3.eth.accounts.signTransaction(rawTransaction, pk.priv)
+            const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
+
+            console.log(responseData)
+            return responseData
+        // } else{
+        //     throw new Error('Saldo na carteira master insuficiente para enviar gas!')
+        // }
     }
 
     async checkTransactions(abbr) {

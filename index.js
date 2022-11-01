@@ -33,7 +33,7 @@ const cronCheckTransactions = new cron.schedule("*/10 * * * *", async() => {
   scheduled: false
 });
 
-const cronCheckHookBalance = new cron.schedule("* * * * *", async() => {
+const cronCheckHookBalance = new cron.schedule("*/20 * * * * *", async() => {
   if(!cronCheckHookBalance.taskRunning){
     cronCheckHookBalance.taskRunning = true
     try {
@@ -113,7 +113,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   }));
 
 app.get('/test', async (req, res) => {
-  // return await res.send(walletController.checkReceivedTransactionsByToken());
+  return await res.send(walletController.checkReceivedTransactionsByToken());
   // return await res.send(walletController.checkBalanceHookToMaster());
   // return await res.send(gasController.syncGas());
 });
@@ -348,11 +348,6 @@ app.post('/nft/abi', async (req, res) => {
         return res.status(400).send(error.message);
     }) 
 });
-
-
-
-
-
 
 app.listen(process.env.PORT, () =>
     console.log(`App listening on port ${process.env.PORT}!`),

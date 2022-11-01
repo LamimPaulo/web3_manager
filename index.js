@@ -33,7 +33,7 @@ const cronCheckTransactions = new cron.schedule("*/10 * * * *", async() => {
   scheduled: false
 });
 
-const cronCheckHookBalance = new cron.schedule("*/20 * * * * *", async() => {
+const cronCheckHookBalance = new cron.schedule("* * * * *", async() => {
   if(!cronCheckHookBalance.taskRunning){
     cronCheckHookBalance.taskRunning = true
     try {
@@ -113,7 +113,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   }));
 
 app.get('/test', async (req, res) => {
-  return await res.send(walletController.checkReceivedTransactionsByToken());
+  // return await res.send(walletController.checkReceivedTransactionsByToken());
   // return await res.send(walletController.checkBalanceHookToMaster());
   // return await res.send(gasController.syncGas());
 });

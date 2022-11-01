@@ -421,9 +421,7 @@ class WalletController {
                 const transactionController = new TransactionController();
                 if(input.contract == 'BEP20' ||input.contract == 'ERC20'){
                     const balance = await this.getBalance(input.address, input.network);
-                    
-                    
-                    
+
                     if(balance >= 0){
                         console.log((balance));;
                         console.log(balance - (balance / 40));

@@ -249,7 +249,8 @@ class WalletController {
 
                 const tokens = await Token.findAll({
                     where: {
-                        is_active: true
+                        is_active: true,
+                        network_id: network.id
                     }
                 });
 
@@ -257,10 +258,10 @@ class WalletController {
                 var balance = 0
 
                 const chain_balance = await (web3.eth.getBalance(wallet.address));
+
                 console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(chain_balance)+' '+network.name);
 
-                if(web3.utils.fromWei(chain_balance) >= 0.2){
-
+                if(web3.utils.fromWei(chain_balance) >= network.address){
                     // const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey=' {
                     const response = await fetch(next().url+'api?module=account&action=txlist'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key, {
                         method: 'get',
@@ -302,58 +303,58 @@ class WalletController {
                         };
                     }
 
-                };
+                }
+                for(const token of tokens){
+                    console.log(token.name);
+                    const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
+                    const token_balance = await web3_token.methods.balanceOf(wallet.address).call()
 
-                // for(const token of tokens){
-                //     const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
-                //     const token_balance = await web3_token.methods.balanceOf(wallet.address).call()
+                    if(token_balance > 0 && token.name != 'CBRL'){
+                    // if(token_balance > 0){
+                        balance++;
+                    }
 
-                //     if(token_balance > 0 && token.name != 'CBRL'){
-                //     // if(token_balance > 0){
-                //         balance++;
-                //     }
+                    console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(token_balance)+' '+token.name);
+                }
 
-                //     console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(token_balance)+' '+token.name);
-                // }
+                if(balance > 0){
+                    const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key, {
+                        method: 'get',
+                        headers: {'Content-Type': 'application/json'}
+                    });
 
-                // if(balance > 0){
-                //     const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key, {
-                //         method: 'get',
-                //         headers: {'Content-Type': 'application/json'}
-                //     });
+                    const res = await response.json();
+                    if(res.result){
+                        for(const r of res.result) {
+                            // if(r.value > 0 && r.to.toLowerCase() == address.toLowerCase() && r.contractAddress.toLowerCase() == contract_address.toLowerCase()){
+                            if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase()){
+                                if(r.contractAddress == '0xbc111c9e7eadc2f457beb6e363d370f0e62e213e'){
+                                    console.log('CBRL ignored')
+                                }
+                                else{
+                                    console.log('contractAddress');
+                                    console.log(r.contractAddress);
+                                    const w3 = new Web3(process.env.PROVIDER_URL);
+                                    r.value = w3.utils.fromWei(r.value)
+                                    r.gasPrice = w3.utils.fromWei(r.gasPrice)
+                                    r.gasUsed = w3.utils.fromWei(r.gasUsed)
+                                    r.gas = w3.utils.fromWei(r.gas)
+                                    r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
+                                    r.network = network.name
 
-                //     const res = await response.json();
-                //     if(res.result){
-                //         for(const r of res.result) {
-                //             // if(r.value > 0 && r.to.toLowerCase() == address.toLowerCase() && r.contractAddress.toLowerCase() == contract_address.toLowerCase()){
-                //             if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase()){
-                //                 if(r.contractAddress == '0xbc111c9e7eadc2f457beb6e363d370f0e62e213e'){
-                //                     console.log('CBRL ignored')
-                //                 }
-                //                 else{
-                //                     console.log('contractAddress');
-                //                     console.log(r.contractAddress);
-                //                     const w3 = new Web3(process.env.PROVIDER_URL);
-                //                     r.value = w3.utils.fromWei(r.value)
-                //                     r.gasPrice = w3.utils.fromWei(r.gasPrice)
-                //                     r.gasUsed = w3.utils.fromWei(r.gasUsed)
-                //                     r.gas = w3.utils.fromWei(r.gas)
-                //                     r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
-                //                     r.network = network.name
+                                    const master = await SystemWallet.findByPk(wallet.system_wallet_id);
+                                    const notified = await this.notifyExchange(JSON.stringify(r), master.host);
 
-                //                     const master = await SystemWallet.findByPk(wallet.system_wallet_id);
-                //                     const notified = await this.notifyExchange(JSON.stringify(r), master.host);
-
-                //                     if(notified == 'Já notifiocado'){
-                //                         console.log('foi true');
-                //                     } else{
-                //                         console.log('foi false');
-                //                     }
-                //                 }
-                //             }
-                //         };
-                //     }
-                // }
+                                    if(notified == 'Já notifiocado'){
+                                        console.log('foi true');
+                                    } else{
+                                        console.log('foi false');
+                                    }
+                                }
+                            }
+                        };
+                    }
+                }
             };
         };
         return true;
@@ -419,13 +420,13 @@ class WalletController {
                 // "{\"address\":\"0x3661431F9c87d6826351dC3ACcaed8956150BBe4\",\"contract\":\"BEP20\",\"network\":\"BEP20\"}"
                 const web3 = new Web3();
                 const transactionController = new TransactionController();
-                if(input.contract == 'BEP20' ||input.contract == 'ERC20'){
+                if(input.contract == 'BEP20' || input.contract == 'ERC20'){
                     const balance = await this.getBalance(input.address, input.network);
 
                     if(balance >= 0){
                         console.log((balance));;
-                        console.log(balance - (balance / 40));
-                        const transfer = await transactionController.transfer(input.address, input.network, (balance - (balance / 20)).toString(), master.address);
+                        console.log(balance - (balance / 25));
+                        const transfer = await transactionController.transfer(input.address, input.network, (balance - (balance / 25)).toString(), master.address);
                         console.log(transfer);
                         channel.ack(message);
 
@@ -487,7 +488,6 @@ class WalletController {
             });
         }
     }
-
 }
 
 export default WalletController;

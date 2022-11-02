@@ -233,8 +233,8 @@ class WalletController {
                 is_active: true
             }
         });
-        var keyss = []
         for(const network of networks) {
+            var keyss = []
             var keys = await NetworkKey.findAll({
                 where: {
                     network_id: network.id,
@@ -249,14 +249,12 @@ class WalletController {
 
             var wallets = await Wallet.findAll();
             for(const wallet of wallets){
-
                 const tokens = await Token.findAll({
                     where: {
                         is_active: true,
                         network_id: network.id
                     }
                 });
-
                 const web3 = new Web3(network.provider);
                 var balance = 0
 
@@ -266,21 +264,26 @@ class WalletController {
 
                 if(web3.utils.fromWei(chain_balance) >= network.address){ // network.address has a string with the minimun acceptable to notify
                     // const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey=' {
-                    const response = await fetch(next().url+'api?module=account&action=txlist'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key, {
-                        method: 'get',
-                        headers: {'Content-Type': 'application/json'}
-                    });
+                        var url = next().url+'api?module=account&action=txlist'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key
+                        const response = await fetch(url, {
+                            method: 'get',
+                            headers: {'Content-Type': 'application/json'}
+                        });
 
-                    const res = await response.json();
+                        const res = await response.json();
+                        console.log('entrou');
+                        console.log(url);
+                        console.log(res);
                     if(res.result){
-                        const sWallet = await SystemWallet.findAll();
+                        // const sWallet = await SystemWallet.findAll();
                         for(const r of res.result) {
                             if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase()){
-                                // for( const sw of sWallet){
-                                //     if(r.from.toLowerCase == sw.address){
-                                //     }
-                                // }
+                                for( const sw of sWallet){
+                                    if(r.from.toLowerCase == sw.address){
+                                    }
+                                }
                                 if(r.from.toLowerCase == '0xbc111c9e7eadc2f457beb6e363d370f0e62e213e'){
+                                // if(false){
                                     console.log('CBRL ignored')
                                 }
                                 else{
@@ -295,6 +298,7 @@ class WalletController {
 
                                     const master = await SystemWallet.findByPk(wallet.system_wallet_id);
                                     const notified = await this.notifyExchange(JSON.stringify(r), master.host);
+                                    console.log(notified);
 
                                     if(notified == 'Já notificado'){
                                         console.log('foi true');
@@ -309,7 +313,7 @@ class WalletController {
                 }
 
                 for(const token of tokens){
-                    console.log(token.name);
+                    // console.log(token.name);
                     const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
                     const token_balance = await web3_token.methods.balanceOf(wallet.address).call()
 

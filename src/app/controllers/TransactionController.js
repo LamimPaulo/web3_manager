@@ -172,11 +172,7 @@ class TransactionController {
                 contract_address: contract
             }
         });
-        // const master = await SystemWallet.findOne({
-        //     where: {
-        //         name: 'master',
-        //     }
-        // })
+
         const chain = await SystemNetwork.findOne({
             where: {
                 name: network,
@@ -185,30 +181,50 @@ class TransactionController {
 
         var web3 = new Web3(chain.provider);
         web3.defaultAccount = master.address
-        const myContract = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
+        if(token){
+            const myContract = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
 
-        console.log(amount);
+            console.log(amount);
 
-        const contractData = await myContract.methods.transfer(
-                target_address,
-                web3.utils.toHex(web3.utils.toWei(amount, 'ether')),
-            ).encodeABI();
+            const contractData = await myContract.methods.transfer(
+                    target_address,
+                    web3.utils.toHex(web3.utils.toWei(amount, 'ether')),
+                ).encodeABI();
 
-        const rawTransaction = {
-            from: master.address,
-            to: token.contract_address,
-            // maxFeePerGas: 250000000000,
-            // maxPriorityFeePerGas: 250000000000,
-            // gas: 21000,
-            gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
-            gas: web3.utils.toHex(77806),
-            data: contractData,
+            const rawTransaction = {
+                from: master.address,
+                to: token.contract_address,
+                gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
+                gas: web3.utils.toHex(77806),
+                data: contractData,
+            }
+
+            const signed = await web3.eth.accounts.signTransaction(rawTransaction, master.priv)
+            const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
+
+            return {ok: true, data: responseData}
+        } else {
+            var gasQ = await web3.eth.getGasPrice();
+            // console.log(web3.utils.fromWei(gasQ, 'Gwei'))
+            // const gasP = await NetworkGas.findOne({
+            //     where: {
+            //         network_id: chain.id,
+            //     }
+            // });
+
+            const rawTransaction = {
+                to: target_address,
+                gasPrice: web3.utils.toHex(gasQ),
+                gas: web3.utils.toHex(50000),
+                value: web3.utils.toHex(web3.utils.toWei(amount, 'ether')),
+            }
+
+            const signed = await web3.eth.accounts.signTransaction(rawTransaction, master.priv)
+            const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
+
+            console.log(responseData)
+            return {ok: true, data: responseData}
         }
-
-        const signed = await web3.eth.accounts.signTransaction(rawTransaction, master.priv)
-        const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
-
-        return {ok: true, data: responseData}
     }
 
     async StartAllowanceByToken(address, contract, network, master) {

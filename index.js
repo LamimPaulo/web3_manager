@@ -155,10 +155,11 @@ app.post('/getbalanceByToken',async (req, res) => {
 
 app.post('/getMasterBalanceByToken',async (req, res) => {
   const {contract, network} = req.body;
+  const data = await walletController.getMasterBalanceByContract(contract, network, req.master);
   return res.send({
     status: 'ok',
     message: 'success',
-    data: await walletController.getMasterBalanceByContract(contract, network, req.master)
+    data: data,
   });
 });
 

@@ -62,11 +62,7 @@ class WalletController {
                     contract_address: contract_addr
                 }
             });
-            // const master = await SystemWallet.findOne({
-            //     where: {
-            //         name: 'master',
-            //     }
-            // })
+
             const chain = await SystemNetwork.findOne({
                 where: {
                     name: network,
@@ -74,16 +70,23 @@ class WalletController {
             });
 
             const web3 = new Web3(chain.provider);
-
+            
             const balance = await web3.eth.getBalance(master.address);
-            const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
-            const token_balance = await web3_token.methods.balanceOf(master.address).call()
+            var token_balance = 0
+            var token_name = null
+            if(token){
+                const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
+                token_balance = await web3_token.methods.balanceOf(master.address).call()
+            } else {
+                token_name = chain.name == 'BEP20' ? 'BNB' : chain.name == 'ERC20' ? 'ETH' : chain.name
+                token_balance = balance;
+            }
 
             return {
                 status: 200,
                 message: 'system wallet',
-                token: token.name,
-                balance: web3.utils.fromWei(token_balance),
+                token: token_name ?? token.name,
+                balance: web3.utils.fromWei(token_balance) ?? 0,
                 bnb: web3.utils.fromWei(balance),
             };
 

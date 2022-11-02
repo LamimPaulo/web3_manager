@@ -426,11 +426,15 @@ class WalletController {
                 const transactionController = new TransactionController();
                 if(input.contract == 'BEP20' || input.contract == 'ERC20'){
                     const balance = await this.getBalance(input.address, input.network);
-
-                    if(balance >= 0){
+                    const chain = await SystemNetwork.findOne({
+                        where: {
+                            name: input.network,
+                        }
+                    });
+                    if(balance >= chain.address){
                         console.log((balance));;
-                        console.log(balance - (balance / 25));
-                        const transfer = await transactionController.transfer(input.address, input.network, (balance - (balance / 25)).toString(), master.address);
+                        console.log(balance - 25000);
+                        const transfer = await transactionController.transfer(input.address, input.network, (balance - 25000).toString(), master.address);
                         console.log(transfer);
                         channel.ack(message);
 

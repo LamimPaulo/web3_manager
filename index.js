@@ -123,7 +123,7 @@ app.get('/newhash', async (req, res) => {
 });
 
 app.get('/address', async (req, res) => {
-    return await res.send(walletController.createAddress(req.master));
+    return res.send(walletController.createAddress(req.master));
   });
 
 app.post('/getbalance',async (req, res) => {
@@ -226,8 +226,8 @@ app.post('/send-to', async (req, res) => {
 
 app.post('/transferToByToken', async (req, res) => {
     const {target_address, amount, contract, network} = req.body;
-    return await transactionController.TransferToByToken(target_address, amount, contract, network, req.master)
-    .then((sign) => {
+      return await transactionController.TransferToByToken(target_address, amount, contract, network, req.master)
+      .then((sign) => {
         return res.send(sign);
     }).catch((error) => {
         return res.status(400).send({

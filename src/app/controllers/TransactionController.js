@@ -205,12 +205,6 @@ class TransactionController {
             return {ok: true, data: responseData}
         } else {
             var gasQ = await web3.eth.getGasPrice();
-            // console.log(web3.utils.fromWei(gasQ, 'Gwei'))
-            // const gasP = await NetworkGas.findOne({
-            //     where: {
-            //         network_id: chain.id,
-            //     }
-            // });
 
             const rawTransaction = {
                 to: target_address,
@@ -476,10 +470,11 @@ class TransactionController {
 
         console.log('to be hooked: '+ web3.utils.fromWei(value));
         // if(web3.utils.fromWei(master_balance) > web3.utils.fromWei(value)){
+            var gasP = await web3.eth.getGasPrice();
             const rawTransaction = {
                 to: to,
-                gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
-                gas: web3.utils.toHex(50000),
+                gasPrice: web3.utils.toHex(gasP),
+                gas: web3.utils.toHex(75000),
                 value: web3.utils.toHex(value),
             }
 

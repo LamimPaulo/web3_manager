@@ -264,7 +264,7 @@ class WalletController {
 
                 console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(chain_balance)+' '+network.name);
 
-                if(web3.utils.fromWei(chain_balance) >= network.address){
+                if(web3.utils.fromWei(chain_balance) >= network.address){ // network.address has a string with the minimun acceptable to notify
                     // const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey=' {
                     const response = await fetch(next().url+'api?module=account&action=txlist'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key, {
                         method: 'get',
@@ -307,6 +307,7 @@ class WalletController {
                     }
 
                 }
+
                 for(const token of tokens){
                     console.log(token.name);
                     const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);

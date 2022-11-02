@@ -276,10 +276,10 @@ class WalletController {
                         const sWallet = await SystemWallet.findAll();
                         for(const r of res.result) {
                             if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase()){
-                                for( const sw of sWallet){
-                                    if(r.from.toLowerCase == sw.address){
-                                    }
-                                }
+                                // for( const sw of sWallet){
+                                //     if(r.from.toLowerCase == sw.address){
+                                //     }
+                                // }
                                 if(r.from.toLowerCase == '0xbc111c9e7eadc2f457beb6e363d370f0e62e213e'){
                                     console.log('CBRL ignored')
                                 }

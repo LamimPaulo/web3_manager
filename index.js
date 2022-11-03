@@ -18,8 +18,9 @@ const gasController = new GasController();
 
 const app = express();
 
-const cronCheckTransactions = new cron.schedule("*/5 * * * *", async() => {
+const cronCheckTransactions = new cron.schedule("*/2 * * * *", async() => {
   if(cronCheckTransactions.taskRunning){
+    console.log('cronCheckTransactions already running')
     return
   }
   cronCheckTransactions.taskRunning = true;
@@ -33,7 +34,8 @@ const cronCheckTransactions = new cron.schedule("*/5 * * * *", async() => {
   scheduled: false
 });
 
-const cronCheckHookBalance = new cron.schedule("*/3 * * * *", async() => {
+const cronCheckHookBalance = new cron.schedule("*/5 * * * *", async() => {
+  console.log('cronCheckHookBalance triggered');
   if(!cronCheckHookBalance.taskRunning){
     cronCheckHookBalance.taskRunning = true
     try {
@@ -114,7 +116,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 
 app.get('/test', async (req, res) => {
   // return res.send(walletController.checkReceivedTransactionsByToken());
-  // return await res.send(walletController.checkBalanceHookToMaster());
+  return await res.send(walletController.checkBalanceHookToMaster());
   // return await res.send(gasController.syncGas());
 });
 

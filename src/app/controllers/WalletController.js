@@ -436,10 +436,8 @@ class WalletController {
                         }
                     });
                     if(balance >= chain.address){
-                        console.log((balance));;
-                        console.log(balance - 25000);
                         const transfer = await transactionController.transfer(input.address, input.network, (balance - 25000).toString(), master.address);
-                        console.log(transfer);
+                       console.log('hooked '.chain.name)
                         channel.ack(message);
 
                     }

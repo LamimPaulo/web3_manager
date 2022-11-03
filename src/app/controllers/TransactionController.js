@@ -95,11 +95,7 @@ class TransactionController {
                 contract_address: contract
             }
         });
-        // const master = await SystemWallet.findOne({
-        //     where: {
-        //         name: 'master',
-        //     }
-        // })
+
         const chain = await SystemNetwork.findOne({
             where: {
                 name: network,
@@ -114,6 +110,7 @@ class TransactionController {
         const contractData = await myContract.methods.transferFrom(address, master.address,
                 amount,
             ).encodeABI();
+            console.log('gas: '.web3.utils.fromWei(77806 * web3.utils.toWei('10', 'Gwei')))
 
         const rawTransaction = {
             from: master.address,
@@ -469,8 +466,10 @@ class TransactionController {
         web3.defaultAccount = pk.address
 
         console.log('to be hooked: '+ web3.utils.fromWei(value));
+        
         // if(web3.utils.fromWei(master_balance) > web3.utils.fromWei(value)){
             var gasP = await web3.eth.getGasPrice();
+            console.log('gas: '+web3.utils.fromWei((75000 * gasP).toString()))
             const rawTransaction = {
                 to: to,
                 gasPrice: web3.utils.toHex(gasP),

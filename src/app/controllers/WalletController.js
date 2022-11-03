@@ -477,6 +477,8 @@ class WalletController {
                             }
                             //todo reinsert in queue
                         }else {
+                            console.log(balance);
+                            console.log('aquii');
                             const transfer = await transactionController.TransferFromByToken(input.address, balance.balance, input.contract, input.network, master);
                             console.log(transfer);
                             channel.ack(message);

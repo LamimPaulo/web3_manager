@@ -34,7 +34,7 @@ const cronCheckTransactions = new cron.schedule("*/2 * * * *", async() => {
   scheduled: false
 });
 
-const cronCheckHookBalance = new cron.schedule("*/5 * * * *", async() => {
+const cronCheckHookBalance = new cron.schedule("* * * * *", async() => {
   console.log('cronCheckHookBalance triggered');
   if(!cronCheckHookBalance.taskRunning){
     cronCheckHookBalance.taskRunning = true

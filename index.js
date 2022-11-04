@@ -36,6 +36,7 @@ const cronCheckTransactions = new cron.schedule("*/2 * * * *", async() => {
 
 const cronCheckHookBalance = new cron.schedule("* * * * *", async() => {
   console.log('cronCheckHookBalance triggered');
+  console.log('cronCheckHookBalance: '.cronCheckHookBalance.taskRunning);
   if(!cronCheckHookBalance.taskRunning){
     cronCheckHookBalance.taskRunning = true
     try {
@@ -65,6 +66,9 @@ const cronCheckNetworkGas = new cron.schedule("0 * * * *", async() => {
 }, {
   scheduled: false
 });
+
+cronCheckHookBalance.taskRunning = false
+cronCheckNetworkGas.taskRunning = false;
 
 cronCheckHookBalance.start();
 cronCheckNetworkGas.start();

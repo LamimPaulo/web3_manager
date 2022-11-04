@@ -265,14 +265,15 @@ class WalletController {
                 if(web3.utils.fromWei(chain_balance) >= network.address){ // network.address has a string with the minimun acceptable to notify
                     // const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey=' {
                         var url = next().url+'api?module=account&action=txlist'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key
+                        console.log('entrou');
+                        console.log(url);
                         const response = await fetch(url, {
                             method: 'get',
                             headers: {'Content-Type': 'application/json'}
                         });
 
                         const res = await response.json();
-                        console.log('entrou');
-                        console.log(url);
+                        
                         console.log(res);
                     if(res.result){
                         // const sWallet = await SystemWallet.findAll();

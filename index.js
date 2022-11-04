@@ -20,7 +20,7 @@ const app = express();
 var running1 = false;
 var running2 = false;
 
-const cronCheckTransactions = new cron.schedule("* * * * *", async() => {
+const cronCheckTransactions = new cron.schedule("5 * * * *", async() => {
   if(running2){
     console.log('cronCheckTransactions already running1')
     return
@@ -36,20 +36,18 @@ const cronCheckTransactions = new cron.schedule("* * * * *", async() => {
   scheduled: false
 });
 
-const cronCheckHookBalance = new cron.schedule("*/3 * * * *", async() => {
-  console.log('cronCheckHookBalance: triggered');
-  console.log(running1);
-  if(!running1){
-    try {
-      running1 = true
-      var tst= await walletController.checkBalanceHookToMaster().then(
-        // running1 = false
-      );
-      console.log(tst);
-    } catch (error) {
-      console.log(error);
-      running1 = false
-    }
+const cronCheckHookBalance = new cron.schedule(" * * * * *", async() => {
+  if(running1){
+    console.log('cronCheckHookBalance: already running');
+    return
+  }
+  try {
+    console.log('cronCheckHookBalance: started running');
+    running1 = true
+    await walletController.checkBalanceHookToMaster()
+  } catch (error) {
+    console.log(error);
+    running1 = false
   }
 }, {
   scheduled: false
@@ -123,8 +121,8 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   }));
 
 app.get('/test', async (req, res) => {
-  return res.send(walletController.checkReceivedTransactionsByToken());
-  // return await res.send(walletController.checkBalanceHookToMaster());
+  // return res.send(walletController.checkReceivedTransactionsByToken());
+  return await res.send(walletController.checkBalanceHookToMaster());
   // return await res.send(gasController.syncGas());
 });
 

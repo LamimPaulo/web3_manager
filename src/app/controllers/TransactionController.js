@@ -129,6 +129,8 @@ class TransactionController {
     }
 
     async CheckConfirmations(txid, network, master) {
+        console.log(txid)
+        console.log(network)
         const chain = await SystemNetwork.findOne({
             where: {
                 name: network,

@@ -128,6 +128,19 @@ class TransactionController {
         return responseData
     }
 
+    async CheckConfirmations(txid, network, master) {
+        const chain = await SystemNetwork.findOne({
+            where: {
+                name: network,
+            }
+        });
+        var web3 = new Web3(chain.provider);
+        const transaction =  await web3.eth.getTransaction(txid);
+        const block = await web3.eth.getBlockNumber();
+        const math = (block - transaction.blockNumber)
+        return math;
+    }
+
     async TransferTo(target_address, amount, abbr) {
 
         var contractAddress = await this.getContract(abbr)

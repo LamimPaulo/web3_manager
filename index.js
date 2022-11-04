@@ -154,6 +154,15 @@ app.post('/mintBrl',async (req, res) => {
   });
 });
 
+app.post('/confirmations',async (req, res) => {
+  const { txid, network } = req.body;
+  return res.send({
+    status: 'ok',
+    message: 'success',
+    data: await transactionController.CheckConfirmations(txid, network, req.master)
+  });
+});
+
 app.post('/getbalanceByToken',async (req, res) => {
   const { address, contract, network } = req.body;
   return res.send({

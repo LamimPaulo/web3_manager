@@ -424,7 +424,7 @@ class WalletController {
 
             channel.consume("ex.token_balance_hook", async message => {
                 const input = JSON.parse(JSON.parse(message.content.toString()));
-                // console.log(input);
+                console.log(input);
                 const wallet = await Wallet.findOne({
                     where: {
                         address: input.address,

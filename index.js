@@ -18,7 +18,7 @@ const gasController = new GasController();
 
 const app = express();
 
-const cronCheckTransactions = new cron.schedule("*/2 * * * *", async() => {
+const cronCheckTransactions = new cron.schedule("* * * * *", async() => {
   if(cronCheckTransactions.taskRunning){
     console.log('cronCheckTransactions already running')
     return

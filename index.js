@@ -18,24 +18,25 @@ const gasController = new GasController();
 
 const app = express();
 var running1 = false;
+var running2 = false;
 
-const cronCheckTransactions = new cron.schedule("*/5 * * * *", async() => {
-  if(cronCheckTransactions.taskRunning){
+const cronCheckTransactions = new cron.schedule("* * * * *", async() => {
+  if(running2){
     console.log('cronCheckTransactions already running1')
     return
   }
-  cronCheckTransactions.taskRunning = true;
   try {
+    running2 = true;
     await walletController.checkReceivedTransactionsByToken();
   } catch (error) {
-    cronCheckTransactions.taskRunning = false
+    running2 = false
   }
-  cronCheckTransactions.taskRunning = false
+  running2 = false
 }, {
   scheduled: false
 });
 
-const cronCheckHookBalance = new cron.schedule("* * * * *", async() => {
+const cronCheckHookBalance = new cron.schedule("*/15 * * * *", async() => {
   console.log('cronCheckHookBalance: triggered');
   console.log(running1);
   if(!running1){
@@ -74,8 +75,8 @@ const cronCheckNetworkGas = new cron.schedule("0 * * * *", async() => {
 cronCheckNetworkGas.taskRunning = false;
 
 cronCheckHookBalance.start();
-// cronCheckNetworkGas.start();
-// cronCheckTransactions.start();
+cronCheckNetworkGas.start();
+cronCheckTransactions.start();
 
 
 async function masterMiddleware(req, res, next) {

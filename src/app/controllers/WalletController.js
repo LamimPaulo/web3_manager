@@ -255,13 +255,14 @@ class WalletController {
                         network_id: network.id
                     }
                 });
+                console.log(network.provider);
                 const web3 = new Web3(network.provider);
                 var balance = 0
 
                 const chain_balance = await (web3.eth.getBalance(wallet.address));
 
                 console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(chain_balance)+' '+network.name);
-
+                console.log(web3.utils.fromWei(chain_balance) >= network.address);
                 if(web3.utils.fromWei(chain_balance) >= network.address){ // network.address has a string with the minimun acceptable to notify
                     // const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey=' {
                         var url = next().url+'api?module=account&action=txlist'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key
@@ -273,10 +274,10 @@ class WalletController {
                         });
 
                         const res = await response.json();
-                        
-                        console.log(res);
+
+                        // console.log(res);
                     if(res.result){
-                        // const sWallet = await SystemWallet.findAll();
+                        const sWallet = await SystemWallet.findAll();
                         for(const r of res.result) {
                             if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase()){
                                 for( const sw of sWallet){
@@ -315,8 +316,10 @@ class WalletController {
 
                 for(const token of tokens){
                     // console.log(token.name);
+                    // console.log(token.contract_address);
                     const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
                     const token_balance = await web3_token.methods.balanceOf(wallet.address).call()
+                    // console.log(token_balance);
 
                     if(token_balance > 0 && token.name != 'CBRL'){
                     // if(token_balance > 0){
@@ -341,8 +344,8 @@ class WalletController {
                                     console.log('CBRL ignored')
                                 }
                                 else{
-                                    console.log('contractAddress');
-                                    console.log(r.contractAddress);
+                                    // console.log('contractAddress');
+                                    // console.log(r.contractAddress);
                                     const w3 = new Web3(process.env.PROVIDER_URL);
                                     r.value = w3.utils.fromWei(r.value)
                                     r.gasPrice = w3.utils.fromWei(r.gasPrice)
@@ -358,6 +361,7 @@ class WalletController {
                                         console.log('foi true');
                                     } else{
                                         console.log('foi false');
+                                        console.log(notified);
                                     }
                                 }
                             }
@@ -412,6 +416,12 @@ class WalletController {
             const connection = await amqp.connect("amqp://"+process.env.AMQP_ADDR+":5672", opt);
             const channel = await connection.createChannel();
             await channel.assertQueue("ex.token_balance_hook");
+
+            connection.on('close', function connectionClose() {
+                log('Connection closed');
+                throw error('closed');
+            });
+
             channel.consume("ex.token_balance_hook", async message => {
                 const input = JSON.parse(JSON.parse(message.content.toString()));
                 // console.log(input);
@@ -472,6 +482,7 @@ class WalletController {
                                 console.log('startou allowance')
                                 var allowed = await transactionController.StartAllowanceByToken(input.address, input.contract, input.network, master).then(async (res) => {
                                     await sleep(10000);
+                                        channel.ack(message);
                                         channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
                                     } );
                                 console.log(allowed);
@@ -491,8 +502,10 @@ class WalletController {
 
                 }
             });
+
         } catch (error) {
             console.error(error);
+            return error;
         }
 
         function sleep(ms) {

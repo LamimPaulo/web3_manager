@@ -105,17 +105,18 @@ class TransactionController {
         var web3 = new Web3(chain.provider);
         web3.defaultAccount = master.address
 
+        var gasQ = await web3.eth.getGasPrice();
         const myContract = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
 
         const contractData = await myContract.methods.transferFrom(address, master.address,
                 amount,
             ).encodeABI();
-            console.log('gas: '.web3.utils.fromWei(77806 * web3.utils.toWei('10', 'Gwei')))
+            console.log('gas: '+web3.utils.fromWei((77806 * gasQ).toString()))
 
         const rawTransaction = {
             from: master.address,
             to: token.contract_address,
-            gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
+            gasPrice: web3.utils.toHex(gasQ),
             gas: web3.utils.toHex(77806),
             data: contractData,
         }
@@ -229,11 +230,6 @@ class TransactionController {
                 contract_address: contract
             }
         });
-        // const master = await SystemWallet.findOne({
-        //     where: {
-        //         name: 'master',
-        //     }
-        // })
         const chain = await SystemNetwork.findOne({
             where: {
                 name: network,
@@ -245,6 +241,7 @@ class TransactionController {
 
         const myContract = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
 
+        var gasP = await web3.eth.getGasPrice();
         var privKey = pk[0].priv
         var privKey = privKey.substr(2)
 
@@ -254,8 +251,8 @@ class TransactionController {
 
         const rawTransaction = {
             to: contract,
-            gas: web3.utils.toHex(50000),
-            gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
+            gas: web3.utils.toHex(75000),
+            gasPrice: web3.utils.toHex(gasP),
             data: contractData,
         }
 

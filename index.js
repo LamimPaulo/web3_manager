@@ -17,10 +17,11 @@ const nftController = new NftController();
 const gasController = new GasController();
 
 const app = express();
+var running1 = false;
 
 const cronCheckTransactions = new cron.schedule("* * * * *", async() => {
   if(cronCheckTransactions.taskRunning){
-    console.log('cronCheckTransactions already running')
+    console.log('cronCheckTransactions already running1')
     return
   }
   cronCheckTransactions.taskRunning = true;
@@ -34,18 +35,21 @@ const cronCheckTransactions = new cron.schedule("* * * * *", async() => {
   scheduled: false
 });
 
-const cronCheckHookBalance = new cron.schedule("* * * * *", async() => {
-  console.log('cronCheckHookBalance triggered');
-  console.log('cronCheckHookBalance: '.cronCheckHookBalance.taskRunning);
-  if(!cronCheckHookBalance.taskRunning){
-    cronCheckHookBalance.taskRunning = true
+const cronCheckHookBalance = new cron.schedule("* * * * * *", async() => {
+  console.log('cronCheckHookBalance: triggered');
+  console.log(running1);
+  if(!running1){
     try {
-      await walletController.checkBalanceHookToMaster();
+      running1 = true
+      var tst= await walletController.checkBalanceHookToMaster().then(
+        // running1 = false
+      );
+      console.log(tst);
     } catch (error) {
-      cronCheckHookBalance.taskRunning = false
+      console.log(error);
+      running1 = false
     }
   }
-  // cronCheckHookBalance.taskRunning = false
 }, {
   scheduled: false
 });
@@ -67,12 +71,11 @@ const cronCheckNetworkGas = new cron.schedule("0 * * * *", async() => {
   scheduled: false
 });
 
-cronCheckHookBalance.taskRunning = false
 cronCheckNetworkGas.taskRunning = false;
 
 cronCheckHookBalance.start();
-cronCheckNetworkGas.start();
-cronCheckTransactions.start();
+// cronCheckNetworkGas.start();
+// cronCheckTransactions.start();
 
 
 async function masterMiddleware(req, res, next) {
@@ -119,8 +122,8 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   }));
 
 app.get('/test', async (req, res) => {
-  // return res.send(walletController.checkReceivedTransactionsByToken());
-  return await res.send(walletController.checkBalanceHookToMaster());
+  return res.send(walletController.checkReceivedTransactionsByToken());
+  // return await res.send(walletController.checkBalanceHookToMaster());
   // return await res.send(gasController.syncGas());
 });
 

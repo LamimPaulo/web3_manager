@@ -19,7 +19,7 @@ const gasController = new GasController();
 const app = express();
 var running1 = false;
 
-const cronCheckTransactions = new cron.schedule("* * * * *", async() => {
+const cronCheckTransactions = new cron.schedule("*/5 * * * *", async() => {
   if(cronCheckTransactions.taskRunning){
     console.log('cronCheckTransactions already running1')
     return
@@ -35,7 +35,7 @@ const cronCheckTransactions = new cron.schedule("* * * * *", async() => {
   scheduled: false
 });
 
-const cronCheckHookBalance = new cron.schedule("* * * * * *", async() => {
+const cronCheckHookBalance = new cron.schedule("* * * * *", async() => {
   console.log('cronCheckHookBalance: triggered');
   console.log(running1);
   if(!running1){

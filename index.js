@@ -21,7 +21,7 @@ var running1 = false;
 var running2 = false;
 var running3 = false;
 
-const cronCheckTransactions = new cron.schedule("* * * * *", async() => {
+const cronCheckTransactions = new cron.schedule("2 * * * *", async() => {
   if(running1){
     console.log('cronCheckTransactions: already running');
     return

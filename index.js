@@ -34,7 +34,7 @@ const cronCheckTransactions = new cron.schedule("* * * * *", async() => {
     console.error(error);
     running1 = false
   }
-  // running1 = false
+  running1 = false
 }, {
   scheduled: false
 });

@@ -27,6 +27,8 @@ const cronCheckTransactions = new cron.schedule("2 * * * *", async() => {
   }
   try {
     running2 = true;
+    console.log('cronCheckTransactions started running1')
+
     await walletController.checkReceivedTransactionsByToken();
   } catch (error) {
     running2 = false

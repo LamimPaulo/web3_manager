@@ -20,7 +20,7 @@ const app = express();
 var running1 = false;
 var running2 = false;
 
-const cronCheckTransactions = new cron.schedule("5 * * * *", async() => {
+const cronCheckTransactions = new cron.schedule("2 * * * *", async() => {
   if(running2){
     console.log('cronCheckTransactions already running1')
     return
@@ -36,7 +36,7 @@ const cronCheckTransactions = new cron.schedule("5 * * * *", async() => {
   scheduled: false
 });
 
-const cronCheckHookBalance = new cron.schedule(" * * * * *", async() => {
+const cronCheckHookBalance = new cron.schedule("* * * * *", async() => {
   if(running1){
     console.log('cronCheckHookBalance: already running');
     return
@@ -121,8 +121,8 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   }));
 
 app.get('/test', async (req, res) => {
-  // return res.send(walletController.checkReceivedTransactionsByToken());
-  return await res.send(walletController.checkBalanceHookToMaster());
+  return res.send(walletController.checkReceivedTransactionsByToken());
+  // return await res.send(walletController.checkBalanceHookToMaster());
   // return await res.send(gasController.syncGas());
 });
 

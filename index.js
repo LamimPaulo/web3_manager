@@ -19,18 +19,19 @@ const gasController = new GasController();
 const app = express();
 var running1 = false;
 var running2 = false;
+var running3 = false;
 
 const cronCheckTransactions = new cron.schedule("2 * * * *", async() => {
   if(running2){
-    console.log('cronCheckTransactions already running1')
+    console.log('cronCheckTransactions: already running');
     return
   }
   try {
-    running2 = true;
-    console.log('cronCheckTransactions started running1')
-
+    console.log('cronCheckTransactions: started running');
+    running2 = true
     await walletController.checkReceivedTransactionsByToken();
   } catch (error) {
+    console.error(error);
     running2 = false
   }
   running2 = false
@@ -56,12 +57,12 @@ const cronCheckHookBalance = new cron.schedule("* * * * *", async() => {
 });
 
 const cronCheckNetworkGas = new cron.schedule("0 * * * *", async() => {
-  if(cronCheckNetworkGas.taskRunning){
+  if(running3){
+    console.log('cronCheckNetworkGas: already running');
     return
   }
-
-  cronCheckNetworkGas.taskRunning = true
   try {
+    console.log('cronCheckNetworkGas: started running');
     await gasController.syncGas();
   } catch (error) {
     //

@@ -21,36 +21,36 @@ var running1 = false;
 var running2 = false;
 var running3 = false;
 
-const cronCheckTransactions = new cron.schedule("2 * * * *", async() => {
-  if(running2){
+const cronCheckTransactions = new cron.schedule("* * * * *", async() => {
+  if(running1){
     console.log('cronCheckTransactions: already running');
     return
   }
   try {
     console.log('cronCheckTransactions: started running');
-    running2 = true
+    running1 = true
     await walletController.checkReceivedTransactionsByToken();
   } catch (error) {
     console.error(error);
-    running2 = false
+    running1 = false
   }
-  running2 = false
+  // running1 = false
 }, {
   scheduled: false
 });
 
 const cronCheckHookBalance = new cron.schedule("* * * * *", async() => {
-  if(running1){
+  if(running2){
     console.log('cronCheckHookBalance: already running');
     return
   }
   try {
     console.log('cronCheckHookBalance: started running');
-    running1 = true
+    running2 = true
     await walletController.checkBalanceHookToMaster()
   } catch (error) {
     console.log(error);
-    running1 = false
+    running2 = false
   }
 }, {
   scheduled: false
@@ -75,9 +75,9 @@ const cronCheckNetworkGas = new cron.schedule("0 * * * *", async() => {
 
 cronCheckNetworkGas.taskRunning = false;
 
+cronCheckTransactions.start();
 cronCheckHookBalance.start();
 cronCheckNetworkGas.start();
-cronCheckTransactions.start();
 
 
 async function masterMiddleware(req, res, next) {

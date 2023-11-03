@@ -84,19 +84,6 @@ class StakingController {
 
         return contractData;
     }
-    
-    async contractCheckReward(contract_name, address){
-        const contract = await this.getContract(contract_name)
-        const chain = await SystemNetwork.findByPk(contract.network_id);
-
-        var web3 = new Web3(chain.provider);
-
-        const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
-
-        const contractData = await myContract.methods.checkReward(address).call();
-
-        return contractData;
-    }
 
     async contractMinValueStake(contract_name){
         const contract = await this.getContract(contract_name)
@@ -191,10 +178,6 @@ class StakingController {
 
         return web3.utils.fromWei(contractData, 'ether');
     }
-
-
-
-
 
 
 

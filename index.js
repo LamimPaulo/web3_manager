@@ -329,7 +329,7 @@ app.post('/staking/apm', async (req, res) => {
     })
 });
 
-app.post('/staking/rewardPercentage', async (req, res) => {
+app.post('/staking/bonusPercentage', async (req, res) => {
     const {name} = req.body;
       return await stakingController.contractPercentageOfBonus(name)
       .then((response) => {

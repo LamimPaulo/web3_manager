@@ -209,7 +209,7 @@ class StakingController {
             return contracts;
         } catch (error) {
             console.log('error')
-            console.log(error.message )
+            console.log(error.message)
             let message = JSON.parse(err.message.substring(56).trim().replace("'", "")).value.data.data;
             console.log(message[Object.keys(message)[0]].reason);
             return error

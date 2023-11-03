@@ -2,12 +2,220 @@ import Web3 from "web3";
 import Wallet from "../models/Wallet.js";
 import SystemWallet from "../models/SystemWallet.js";
 import Token from "../models/Token.js";
+import Staking from "../models/Staking.js";
 import SystemNetwork from "../models/SystemNetwork.js";
 import NetworkGas from "../models/NetworkGas.js";
 
 // import Https from "Https"`
 
-class TransactionController {
+class StakingController {
+
+    async TestController(name) {
+
+        const contractAddress = await Staking.findOne(
+            {
+                where: {
+                    name: name
+                }
+            }
+        );
+        
+
+        console.log('contractAddress');
+        console.log(contractAddress);
+
+        return (contractAddress);
+    }
+
+    async getContract(name){
+        const contract = await Staking.findOne({
+            where: {
+                name: name,
+            }
+        });
+
+        return contract
+    }
+
+    async getABI(abbr){
+        var abi = ''
+        switch (abbr) {
+            case 'USDT':
+                abi = process.env.USDT_ABI_ENCODED
+                break;
+            case 'NFT':
+                abi = process.env.NFT_CONTRACT_ABI
+                break;
+            case 'BTCC':
+                abi = process.env.BTCC_CONTRACT_ABI
+                break;
+            default:
+                abi = process.env.USDT_ABI_ENCODED
+                break;
+            }
+
+            return await JSON.parse(abi)
+    }
+
+    //read - 
+
+    async contractBalanceOf(contract_name, address){
+        const contract = await this.getContract(contract_name)
+        const chain = await SystemNetwork.findByPk(contract.network_id);
+
+        var web3 = new Web3(chain.provider);
+
+        const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
+
+        const contractData = await myContract.methods.balanceOf(address).call();
+
+        return contractData;
+    }
+
+    async contractCheckReward(contract_name, address){
+        const contract = await this.getContract(contract_name)
+        const chain = await SystemNetwork.findByPk(contract.network_id);
+
+        var web3 = new Web3(chain.provider);
+
+        const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
+
+        const contractData = await myContract.methods.checkReward(address).call();
+
+        return contractData;
+    }
+    
+    async contractCheckReward(contract_name, address){
+        const contract = await this.getContract(contract_name)
+        const chain = await SystemNetwork.findByPk(contract.network_id);
+
+        var web3 = new Web3(chain.provider);
+
+        const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
+
+        const contractData = await myContract.methods.checkReward(address).call();
+
+        return contractData;
+    }
+
+    async contractMinValueStake(contract_name){
+        const contract = await this.getContract(contract_name)
+        const chain = await SystemNetwork.findByPk(contract.network_id);
+
+        var web3 = new Web3(chain.provider);
+
+        const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
+
+        const contractData = await myContract.methods.minValueStake().call();
+
+        return contractData;
+    }
+
+    async contractPercentageOfAPM(contract_name){
+        const contract = await this.getContract(contract_name)
+        const chain = await SystemNetwork.findByPk(contract.network_id);
+
+        var web3 = new Web3(chain.provider);
+
+        const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
+
+        const contractData = await myContract.methods.percentageOfAPM().call();
+
+        return contractData;
+    }
+    
+    async contractPercentageOfBonus(contract_name){
+        const contract = await this.getContract(contract_name)
+        const chain = await SystemNetwork.findByPk(contract.network_id);
+
+        var web3 = new Web3(chain.provider);
+
+        const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
+
+        const contractData = await myContract.methods.percentageOfBonus().call();
+
+        return contractData;
+    }
+
+    async contractPercentageOfPenalty(contract_name){
+        const contract = await this.getContract(contract_name)
+        const chain = await SystemNetwork.findByPk(contract.network_id);
+
+        var web3 = new Web3(chain.provider);
+
+        const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
+
+        const contractData = await myContract.methods.percentageOfPenalty().call();
+
+        return contractData;
+    }
+
+    async contractRewardSupply(contract_name){
+        const contract = await this.getContract(contract_name)
+        const chain = await SystemNetwork.findByPk(contract.network_id);
+
+        var web3 = new Web3(chain.provider);
+
+        const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
+
+        const contractData = await myContract.methods.rewardSupply().call();
+
+        return web3.utils.fromWei(contractData, 'ether');
+    }
+
+    async contractTotalSupply(contract_name){
+        const contract = await this.getContract(contract_name)
+        const chain = await SystemNetwork.findByPk(contract.network_id);
+
+        var web3 = new Web3(chain.provider);
+
+        const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
+
+        const contractData = await myContract.methods.totalSupply().call();
+
+        return web3.utils.fromWei(contractData, 'ether');
+    }
+
+
+    //write
+
+    async contractAccumulateReward(contract_name){
+        const contract = await this.getContract(contract_name)
+        const chain = await SystemNetwork.findByPk(contract.network_id);
+
+        var web3 = new Web3(chain.provider);
+
+        const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
+
+        const contractData = await myContract.methods.accumulateReward().call();
+
+        return web3.utils.fromWei(contractData, 'ether');
+    }
+
+
+
+
+
+
+
+
+
+
+    async listAllContracts() {
+        try {
+
+            const contracts = Staking.findAll({attributes: ['name', 'contract_address']});
+
+            return contracts;
+        } catch (error) {
+            console.log('error')
+            console.log(error.message )
+            let message = JSON.parse(err.message.substring(56).trim().replace("'", "")).value.data.data;
+            console.log(message[Object.keys(message)[0]].reason);
+            return error
+        }
+    }
+
 
     async signTx(sender, receiver, amount, abbr) {
         try {
@@ -18,6 +226,8 @@ class TransactionController {
                     address: sender,
                 }
             });
+
+            
 
             var web3 = new Web3(process.env.PROVIDER_URL);
             web3.defaultAccount = pk[0].address
@@ -520,46 +730,6 @@ class TransactionController {
         return await web3.eth.subscribe()
     }
 
-    async getContract(abbr){
-        var contract = ''
-        switch (abbr) {
-            case 'USDT':
-                contract = process.env.USDT_ADDRESS
-                break;
-            case 'NFT':
-                contract = process.env.NFT_CONTRACT_ADDRESS
-                break;
-            case 'BTCC':
-                contract = process.env.BTCC_CONTRACT_ADDRESS
-                break;
-            default:
-                contract = process.env.USDT_ADDRESS
-                break;
-            }
-
-            return contract
-    }
-
-    async getABI(abbr){
-        var abi = ''
-        switch (abbr) {
-            case 'USDT':
-                abi = process.env.USDT_ABI_ENCODED
-                break;
-            case 'NFT':
-                abi = process.env.NFT_CONTRACT_ABI
-                break;
-            case 'BTCC':
-                abi = process.env.BTCC_CONTRACT_ABI
-                break;
-            default:
-                abi = process.env.USDT_ABI_ENCODED
-                break;
-            }
-
-            return await JSON.parse(abi)
-    }
-
     async mintBrl(amount, master){
         const token = await Token.findOne({
             where: {
@@ -671,4 +841,4 @@ class TransactionController {
     }
 }
 
-export default TransactionController;
+export default StakingController;

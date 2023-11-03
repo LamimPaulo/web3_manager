@@ -10,8 +10,10 @@ import bodyParser from "body-parser";
 import database from './src/database/index.js';
 import * as cron from 'node-cron';
 import bcrypt from 'bcrypt';
+import StakingController from './src/app/controllers/StakingController.js';
 
 const transactionController = new TransactionController();
+const stakingController = new StakingController();
 const walletController = new WalletController();
 const nftController = new NftController();
 const gasController = new GasController();
@@ -257,6 +259,162 @@ app.post('/transferToByToken', async (req, res) => {
     })
 });
 
+app.post('/staking/test', async (req, res) => {
+    const {name} = req.body;
+      return await stakingController.TestController(name)
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/bnbBalance', async (req, res) => {
+    const {name, address} = req.body;
+      return await stakingController.contractBalanceOf(name, address)
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/checkRewards', async (req, res) => {
+    const {name, address} = req.body;
+      return await stakingController.contractCheckReward(name, address)
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/minStake', async (req, res) => {
+    const {name} = req.body;
+      return await stakingController.contractMinValueStake(name)
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/apm', async (req, res) => {
+    const {name} = req.body;
+      return await stakingController.contractPercentageOfAPM(name)
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/rewardPercentage', async (req, res) => {
+    const {name} = req.body;
+      return await stakingController.contractPercentageOfBonus(name)
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/penaltyPercentage', async (req, res) => {
+    const {name} = req.body;
+      return await stakingController.contractPercentageOfPenalty(name)
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/rewardSupply', async (req, res) => {
+    const {name} = req.body;
+      return await stakingController.contractRewardSupply(name)
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/totalSupply', async (req, res) => {
+    const {name} = req.body;
+      return await stakingController.contractTotalSupply(name)
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/accumulateReward', async (req, res) => {
+    const {name} = req.body;
+      return await stakingController.contractAccumulateReward(name)
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.get('/staking/all', async (req, res) => {
+      return await stakingController.listAllContracts()
+      .then((response) => {
+        return res.send({
+          message: 'success',
+          data: response
+        });
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
 app.post('/TransferNoGasBRLFromInfinityWallet', async (req, res) => {
     const {target_address, amount} = req.body;
     return await transactionController.TransferNoGasBRLFromInfinityWallet(target_address, amount, req.master)
@@ -369,6 +527,7 @@ app.post('/nft/abi', async (req, res) => {
         return res.status(400).send(error.message);
     }) 
 });
+
 
 app.listen(process.env.PORT, () =>
     console.log(`App listening on port ${process.env.PORT}!`),

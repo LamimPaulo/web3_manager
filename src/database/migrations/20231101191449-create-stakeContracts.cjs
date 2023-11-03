@@ -1,7 +1,8 @@
 'use strict';
 
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable("network_keys",{
+  up: (queryInterface, Sequelize) => queryInterface.createTable("staking", {
     id:{
       type: Sequelize.INTEGER,
       allowNull:false,
@@ -13,27 +14,25 @@ module.exports = {
       references: {
         model:{
           tableName: 'system_networks',
-
         },
         key: 'id',
       },
+    },
+    name: {
+      type: Sequelize.STRING(),
       allowNull: false,
     },
-    url:{
+    contract_address:{
       type: Sequelize.STRING(),
       allowNull:false
     },
-    key:{
-      type: Sequelize.STRING(),
+    contract_abi:{
+      type: Sequelize.JSON(),
       allowNull:false
     },
     is_active: {
       type: Sequelize.BOOLEAN(),
       defaultValue: true
-    },
-    is_daily_expired: {
-      type: Sequelize.BOOLEAN(),
-      defaultValue: false
     },
     created_at: {
       type: 'TIMESTAMP',
@@ -47,7 +46,7 @@ module.exports = {
     }
   }),
 
-  down: async (queryInterface, Sequelize) => {
+  async down (queryInterface, Sequelize) {
     /**
      * Add reverting commands here.
      *

@@ -97,6 +97,7 @@ async function masterMiddleware(req, res, next) {
       message: 'os-system header not set'
     });
   }
+
   const wallet = await SystemWallet.findOne({
     where: {
       name: name
@@ -106,7 +107,7 @@ async function masterMiddleware(req, res, next) {
   if(!wallet){
     res.status(400).send({
       status: 'error',
-      message: 'os-system has no matching record on db'
+      message: 'os-system is invalid'
     });
   }
 
@@ -273,7 +274,8 @@ app.post('/staking/test', async (req, res) => {
     })
 });
 
-app.post('/staking/bnbBalance', async (req, res) => {
+
+app.post('/staking/checkBalance', async (req, res) => {
     const {name, address} = req.body;
       return await stakingController.contractBalanceOf(name, address)
       .then((response) => {
@@ -290,6 +292,20 @@ app.post('/staking/bnbBalance', async (req, res) => {
 app.post('/staking/checkRewards', async (req, res) => {
     const {name, address} = req.body;
       return await stakingController.contractCheckReward(name, address)
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/checkAccumulatedReward', async (req, res) => {
+    const {name, address} = req.body;
+      return await stakingController.contractCheckAccumulatedReward(name, address)
       .then((response) => {
         return res.send(response);
     }).catch((error) => {
@@ -387,7 +403,117 @@ app.post('/staking/totalSupply', async (req, res) => {
 
 app.post('/staking/accumulateReward', async (req, res) => {
     const {name} = req.body;
-      return await stakingController.contractAccumulateReward(name)
+      return await stakingController.contractAccumulateReward(name, req.master)
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/claimAllReward', async (req, res) => {
+    const {name} = req.body;
+      return await stakingController.contractClaimAllReward(name, req.master)
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/updateAllInfo', async (req, res) => {
+    const {name, minStake, rewardSupply, apm, bonus, penalty} = req.body;
+      return await stakingController.contractUpdateAllInfo(
+          name,minStake, rewardSupply, apm, bonus, penalty, req.master
+        )
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/updateAPM', async (req, res) => {
+    const {name, apm} = req.body;
+      return await stakingController.contractUpdateAPM(
+          name, apm, req.master
+        )
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/updateBonus', async (req, res) => {
+    const {name, bonus} = req.body;
+      return await stakingController.contractUpdateBonus(
+          name, bonus, req.master
+        )
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/updatePenalty', async (req, res) => {
+    const {name, penalty} = req.body;
+      return await stakingController.contractUpdatePenalty(
+          name, penalty, req.master
+        )
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/updateRewardSupply', async (req, res) => {
+    const {name, rewardSupply} = req.body;
+      return await stakingController.contractUpdateRewardSupply(
+          name, rewardSupply, req.master
+        )
+      .then((response) => {
+        return res.send(response);
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/updateMinValueStake', async (req, res) => {
+    const {name, minStake} = req.body;
+      return await stakingController.contractUpdateMinValueStake(
+          name, minStake, req.master
+        )
       .then((response) => {
         return res.send(response);
     }).catch((error) => {
@@ -414,6 +540,45 @@ app.get('/staking/all', async (req, res) => {
         });
     })
 });
+
+app.post('/staking/stake', async (req, res) => {
+  const {name, user_address, amount} = req.body;
+      return await stakingController.contractStake(name, user_address, amount, req.master)
+      .then((response) => {
+        return res.send({
+          message: 'success',
+          data: response
+        });
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+app.post('/staking/unstake', async (req, res) => {
+  const {name, user_address, amount} = req.body;
+      return await stakingController.contractUnstake(name, user_address, amount, req.master)
+      .then((response) => {
+        return res.send({
+          message: 'success',
+          data: response
+        });
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
+
+
+
+
 
 app.post('/TransferNoGasBRLFromInfinityWallet', async (req, res) => {
     const {target_address, amount} = req.body;

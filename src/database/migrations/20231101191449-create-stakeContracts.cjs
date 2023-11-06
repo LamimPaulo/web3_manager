@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable("staking", {
+  up: (queryInterface, Sequelize) => queryInterface.createTable("stakings", {
     id:{
       type: Sequelize.INTEGER,
       allowNull:false,

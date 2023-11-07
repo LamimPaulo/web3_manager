@@ -276,8 +276,8 @@ app.post('/staking/test', async (req, res) => {
 
 
 app.post('/staking/checkBalance', async (req, res) => {
-    const {name, address} = req.body;
-      return await stakingController.contractBalanceOf(name, address)
+    const {contract_address, address} = req.body;
+      return await stakingController.contractBalanceOf(contract_address, address)
       .then((response) => {
         return res.send(response);
     }).catch((error) => {
@@ -290,8 +290,8 @@ app.post('/staking/checkBalance', async (req, res) => {
 });
 
 app.post('/staking/checkRewards', async (req, res) => {
-    const {name, address} = req.body;
-      return await stakingController.contractCheckReward(name, address)
+    const {contract_address, address} = req.body;
+      return await stakingController.contractCheckReward(contract_address, address)
       .then((response) => {
         return res.send(response);
     }).catch((error) => {
@@ -304,8 +304,8 @@ app.post('/staking/checkRewards', async (req, res) => {
 });
 
 app.post('/staking/checkAccumulatedReward', async (req, res) => {
-    const {name, address} = req.body;
-      return await stakingController.contractCheckAccumulatedReward(name, address)
+    const {contract_address, address} = req.body;
+      return await stakingController.contractCheckAccumulatedReward(contract_address, address)
       .then((response) => {
         return res.send(response);
     }).catch((error) => {
@@ -318,8 +318,8 @@ app.post('/staking/checkAccumulatedReward', async (req, res) => {
 });
 
 app.post('/staking/minStake', async (req, res) => {
-    const {name} = req.body;
-      return await stakingController.contractMinValueStake(name)
+    const { contract_address } = req.body;
+      return await stakingController.contractMinValueStake(contract_address)
       .then((response) => {
         return res.send(response);
     }).catch((error) => {
@@ -332,8 +332,8 @@ app.post('/staking/minStake', async (req, res) => {
 });
 
 app.post('/staking/apm', async (req, res) => {
-    const {name} = req.body;
-      return await stakingController.contractPercentageOfAPM(name)
+    const {contract_address} = req.body;
+      return await stakingController.contractPercentageOfAPM(contract_address)
       .then((response) => {
         return res.send(response);
     }).catch((error) => {
@@ -346,8 +346,8 @@ app.post('/staking/apm', async (req, res) => {
 });
 
 app.post('/staking/bonusPercentage', async (req, res) => {
-    const {name} = req.body;
-      return await stakingController.contractPercentageOfBonus(name)
+    const {contract_address} = req.body;
+      return await stakingController.contractPercentageOfBonus(contract_address)
       .then((response) => {
         return res.send(response);
     }).catch((error) => {
@@ -360,8 +360,8 @@ app.post('/staking/bonusPercentage', async (req, res) => {
 });
 
 app.post('/staking/penaltyPercentage', async (req, res) => {
-    const {name} = req.body;
-      return await stakingController.contractPercentageOfPenalty(name)
+    const {contract_address} = req.body;
+      return await stakingController.contractPercentageOfPenalty(contract_address)
       .then((response) => {
         return res.send(response);
     }).catch((error) => {
@@ -374,8 +374,8 @@ app.post('/staking/penaltyPercentage', async (req, res) => {
 });
 
 app.post('/staking/rewardSupply', async (req, res) => {
-    const {name} = req.body;
-      return await stakingController.contractRewardSupply(name)
+    const {contract_address} = req.body;
+      return await stakingController.contractRewardSupply(contract_address)
       .then((response) => {
         return res.send(response);
     }).catch((error) => {
@@ -388,8 +388,8 @@ app.post('/staking/rewardSupply', async (req, res) => {
 });
 
 app.post('/staking/totalSupply', async (req, res) => {
-    const {name} = req.body;
-      return await stakingController.contractTotalSupply(name)
+    const {contract_address} = req.body;
+      return await stakingController.contractTotalSupply(contract_address)
       .then((response) => {
         return res.send(response);
     }).catch((error) => {
@@ -402,8 +402,8 @@ app.post('/staking/totalSupply', async (req, res) => {
 });
 
 app.post('/staking/accumulateReward', async (req, res) => {
-    const {name} = req.body;
-      return await stakingController.contractAccumulateReward(name, req.master)
+    const {contract_address} = req.body;
+      return await stakingController.contractAccumulateReward(contract_address, req.master)
       .then((response) => {
         return res.send(response);
     }).catch((error) => {
@@ -416,8 +416,8 @@ app.post('/staking/accumulateReward', async (req, res) => {
 });
 
 app.post('/staking/claimAllReward', async (req, res) => {
-    const {name} = req.body;
-      return await stakingController.contractClaimAllReward(name, req.master)
+    const {contract_address} = req.body;
+      return await stakingController.contractClaimAllReward(contract_address, req.master)
       .then((response) => {
         return res.send(response);
     }).catch((error) => {
@@ -430,9 +430,9 @@ app.post('/staking/claimAllReward', async (req, res) => {
 });
 
 app.post('/staking/updateAllInfo', async (req, res) => {
-    const {name, minStake, rewardSupply, apm, bonus, penalty} = req.body;
+    const {contract_address, minStake, rewardSupply, apm, bonus, penalty} = req.body;
       return await stakingController.contractUpdateAllInfo(
-          name,minStake, rewardSupply, apm, bonus, penalty, req.master
+          contract_address,minStake, rewardSupply, apm, bonus, penalty, req.master
         )
       .then((response) => {
         return res.send(response);
@@ -446,9 +446,9 @@ app.post('/staking/updateAllInfo', async (req, res) => {
 });
 
 app.post('/staking/updateAPM', async (req, res) => {
-    const {name, apm} = req.body;
+    const {contract_address, apm} = req.body;
       return await stakingController.contractUpdateAPM(
-          name, apm, req.master
+          contract_address, apm, req.master
         )
       .then((response) => {
         return res.send(response);
@@ -462,9 +462,9 @@ app.post('/staking/updateAPM', async (req, res) => {
 });
 
 app.post('/staking/updateBonus', async (req, res) => {
-    const {name, bonus} = req.body;
+    const {contract_address, bonus} = req.body;
       return await stakingController.contractUpdateBonus(
-          name, bonus, req.master
+          contract_address, bonus, req.master
         )
       .then((response) => {
         return res.send(response);
@@ -478,9 +478,9 @@ app.post('/staking/updateBonus', async (req, res) => {
 });
 
 app.post('/staking/updatePenalty', async (req, res) => {
-    const {name, penalty} = req.body;
+    const {contract_address, penalty} = req.body;
       return await stakingController.contractUpdatePenalty(
-          name, penalty, req.master
+          contract_address, penalty, req.master
         )
       .then((response) => {
         return res.send(response);
@@ -494,9 +494,9 @@ app.post('/staking/updatePenalty', async (req, res) => {
 });
 
 app.post('/staking/updateRewardSupply', async (req, res) => {
-    const {name, rewardSupply} = req.body;
+    const {contract_address, rewardSupply} = req.body;
       return await stakingController.contractUpdateRewardSupply(
-          name, rewardSupply, req.master
+          contract_address, rewardSupply, req.master
         )
       .then((response) => {
         return res.send(response);
@@ -510,9 +510,9 @@ app.post('/staking/updateRewardSupply', async (req, res) => {
 });
 
 app.post('/staking/updateMinValueStake', async (req, res) => {
-    const {name, minStake} = req.body;
+    const {contract_address, minStake} = req.body;
       return await stakingController.contractUpdateMinValueStake(
-          name, minStake, req.master
+          contract_address, minStake, req.master
         )
       .then((response) => {
         return res.send(response);
@@ -542,8 +542,8 @@ app.get('/staking/all', async (req, res) => {
 });
 
 app.post('/staking/stake', async (req, res) => {
-  const {name, user_address, amount} = req.body;
-      return await stakingController.contractStake(name, user_address, amount, req.master)
+  const {contract_address, user_address, amount} = req.body;
+      return await stakingController.contractStake(contract_address, user_address, amount, req.master)
       .then((response) => {
         return res.send({
           message: 'success',
@@ -559,8 +559,8 @@ app.post('/staking/stake', async (req, res) => {
 });
 
 app.post('/staking/unstake', async (req, res) => {
-  const {name, user_address, amount} = req.body;
-      return await stakingController.contractUnstake(name, user_address, amount, req.master)
+  const {contract_address, user_address, amount} = req.body;
+      return await stakingController.contractUnstake(contract_address, user_address, amount, req.master)
       .then((response) => {
         return res.send({
           message: 'success',

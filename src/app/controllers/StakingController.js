@@ -110,10 +110,10 @@ class StakingController {
     //     return contractData; //salvar a response
     // }
 
-    async getContract(name){
+    async getContract(address){
         const contract = await Staking.findOne({
             where: {
-                name: name,
+                contract_address: address,
             }
         });
 
@@ -142,8 +142,8 @@ class StakingController {
 
     //read - 
 
-    async contractBalanceOf(contract_name, address){
-        const contract = await this.getContract(contract_name)
+    async contractBalanceOf(contract_address, address){
+        const contract = await this.getContract(contract_address)
         const chain = await SystemNetwork.findByPk(contract.network_id);
 
         var web3 = new Web3(chain.provider);
@@ -155,8 +155,8 @@ class StakingController {
         return web3.utils.fromWei(contractData, 'ether');
     }
 
-    async contractCheckAccumulatedReward(contract_name, address){
-        const contract = await this.getContract(contract_name)
+    async contractCheckAccumulatedReward(contract_address, address){
+        const contract = await this.getContract(contract_address)
         const chain = await SystemNetwork.findByPk(contract.network_id);
 
         var web3 = new Web3(chain.provider);
@@ -169,8 +169,8 @@ class StakingController {
         return web3.utils.fromWei(contractData, 'ether');
     }
 
-    async contractCheckReward(contract_name, address){
-        const contract = await this.getContract(contract_name)
+    async contractCheckReward(contract_address, address){
+        const contract = await this.getContract(contract_address)
         const chain = await SystemNetwork.findByPk(contract.network_id);
 
         var web3 = new Web3(chain.provider);
@@ -184,8 +184,8 @@ class StakingController {
         return web3.utils.fromWei(contractData, 'ether');
     }
 
-    async contractMinValueStake(contract_name){
-        const contract = await this.getContract(contract_name)
+    async contractMinValueStake(contract_address){
+        const contract = await this.getContract(contract_address)
         const chain = await SystemNetwork.findByPk(contract.network_id);
 
         var web3 = new Web3(chain.provider);
@@ -198,8 +198,8 @@ class StakingController {
         return web3.utils.fromWei(contractData, 'ether');
     }
 
-    async contractPercentageOfAPM(contract_name){
-        const contract = await this.getContract(contract_name)
+    async contractPercentageOfAPM(contract_address){
+        const contract = await this.getContract(contract_address)
         const chain = await SystemNetwork.findByPk(contract.network_id);
 
         var web3 = new Web3(chain.provider);
@@ -211,8 +211,8 @@ class StakingController {
         return contractData;
     }
     
-    async contractPercentageOfBonus(contract_name){
-        const contract = await this.getContract(contract_name)
+    async contractPercentageOfBonus(contract_address){
+        const contract = await this.getContract(contract_address)
         const chain = await SystemNetwork.findByPk(contract.network_id);
 
         var web3 = new Web3(chain.provider);
@@ -224,8 +224,8 @@ class StakingController {
         return contractData;
     }
 
-    async contractPercentageOfPenalty(contract_name){
-        const contract = await this.getContract(contract_name)
+    async contractPercentageOfPenalty(contract_address){
+        const contract = await this.getContract(contract_address)
         const chain = await SystemNetwork.findByPk(contract.network_id);
 
         var web3 = new Web3(chain.provider);
@@ -237,8 +237,8 @@ class StakingController {
         return contractData;
     }
 
-    async contractRewardSupply(contract_name){
-        const contract = await this.getContract(contract_name)
+    async contractRewardSupply(contract_address){
+        const contract = await this.getContract(contract_address)
         const chain = await SystemNetwork.findByPk(contract.network_id);
 
         var web3 = new Web3(chain.provider);
@@ -250,8 +250,8 @@ class StakingController {
         return web3.utils.fromWei(contractData, 'ether');
     }
 
-    async contractTotalSupply(contract_name){
-        const contract = await this.getContract(contract_name)
+    async contractTotalSupply(contract_address){
+        const contract = await this.getContract(contract_address)
         const chain = await SystemNetwork.findByPk(contract.network_id);
 
         var web3 = new Web3(chain.provider);
@@ -266,13 +266,9 @@ class StakingController {
 
     //write
 
-    async contractAccumulateReward(name, master) {
+    async contractAccumulateReward(contract_address, master) {
 
-        const contract = await Staking.findOne({
-            where: {
-                name: name
-            }
-        });
+        const contract = await this.getContract(contract_address)
   
         const chain = await SystemNetwork.findByPk(contract.network_id);
         var web3 = new Web3(chain.provider);
@@ -307,13 +303,9 @@ class StakingController {
         return (responseData);
     }
 
-    async contractClaimAllReward(name, master) {
+    async contractClaimAllReward(contract_address, master) {
 
-        const contract = await Staking.findOne({
-            where: {
-                name: name
-            }
-        });
+        const contract = await this.getContract(contract_address);
   
         const chain = await SystemNetwork.findByPk(contract.network_id);
         var web3 = new Web3(chain.provider);
@@ -348,20 +340,20 @@ class StakingController {
         return (responseData);
     }
 
-    async contractStakeAmount(contract_name){
-        const contract = await this.getContract(contract_name)
-        const chain = await SystemNetwork.findByPk(contract.network_id);
+    // async contractStakeAmount(contract_address){
+    //     const contract = await this.getContract(contract_address)
+    //     const chain = await SystemNetwork.findByPk(contract.network_id);
 
-        var web3 = new Web3(chain.provider);
+    //     var web3 = new Web3(chain.provider);
 
-        const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
+    //     const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
 
-        const contractData = await myContract.methods.accumulateReward().call();
+    //     const contractData = await myContract.methods.accumulateReward().call();
 
-        return web3.utils.fromWei(contractData, 'ether');
-    }
+    //     return web3.utils.fromWei(contractData, 'ether');
+    // }
 
-    async contractStake(name, user_address, amount, master) {
+    async contractStake(contract_address, user_address, amount, master) {
 
         const user_wallet = await Wallet.findOne({
             where: {
@@ -369,11 +361,7 @@ class StakingController {
             }
         })
 
-        const contract = await Staking.findOne({
-            where: {
-                name: name
-            }
-        });
+        const contract = await this.getContract(contract_address);
   
         const chain = await SystemNetwork.findByPk(contract.network_id);
         var web3 = new Web3(chain.provider);
@@ -408,7 +396,7 @@ class StakingController {
         return (responseData);
     }
 
-    async contractUnstake(name, user_address, amount, master) {
+    async contractUnstake(contract_address, user_address, amount, master) {
 
         const user_wallet = await Wallet.findOne({
             where: {
@@ -416,11 +404,7 @@ class StakingController {
             }
         })
 
-        const contract = await Staking.findOne({
-            where: {
-                name: name
-            }
-        });
+        const contract = await this.getContract(contract_address)
   
         const chain = await SystemNetwork.findByPk(contract.network_id);
         var web3 = new Web3(chain.provider);
@@ -456,7 +440,7 @@ class StakingController {
     }
 
     async contractUpdateAllInfo(
-        name,
+        contract_address,
         minStake,
         rewardSupply,
         apm,
@@ -465,11 +449,7 @@ class StakingController {
         master,
         ) {
 
-        const contract = await Staking.findOne({
-            where: {
-                name: name
-            }
-        });
+        const contract = await this.getContract(contract_address);
   
         const chain = await SystemNetwork.findByPk(contract.network_id);
         var web3 = new Web3(chain.provider);
@@ -512,13 +492,9 @@ class StakingController {
         return (responseData);
     }
 
-    async contractUpdateMinValueStake(name, minStake, master) {
+    async contractUpdateMinValueStake(contract_address, minStake, master) {
 
-        const contract = await Staking.findOne({
-            where: {
-                name: name
-            }
-        });
+        const contract = await this.getContract(contract_address);
   
         const chain = await SystemNetwork.findByPk(contract.network_id);
         var web3 = new Web3(chain.provider);
@@ -557,13 +533,9 @@ class StakingController {
         return (responseData);
     }
 
-    async contractUpdateRewardSupply(name, rewardSupply, master) {
+    async contractUpdateRewardSupply(contract_address, rewardSupply, master) {
 
-        const contract = await Staking.findOne({
-            where: {
-                name: name
-            }
-        });
+        const contract = await this.getContract(contract_address);
   
         const chain = await SystemNetwork.findByPk(contract.network_id);
         var web3 = new Web3(chain.provider);
@@ -602,13 +574,9 @@ class StakingController {
         return (responseData);
     }
 
-    async contractUpdateAPM(name, apm, master) {
+    async contractUpdateAPM(contract_address, apm, master) {
 
-        const contract = await Staking.findOne({
-            where: {
-                name: name
-            }
-        });
+        const contract = await this.getContract(contract_address);
   
         const chain = await SystemNetwork.findByPk(contract.network_id);
         var web3 = new Web3(chain.provider);
@@ -647,13 +615,9 @@ class StakingController {
         return (responseData);
     }
 
-    async contractUpdatePenalty(name, penalty, master) {
+    async contractUpdatePenalty(contract_address, penalty, master) {
 
-        const contract = await Staking.findOne({
-            where: {
-                name: name
-            }
-        });
+        const contract = await this.getContract(contract_address);
   
         const chain = await SystemNetwork.findByPk(contract.network_id);
         var web3 = new Web3(chain.provider);
@@ -692,13 +656,9 @@ class StakingController {
         return (responseData);
     }
 
-    async contractUpdateBonus(name, bonus, master) {
+    async contractUpdateBonus(contract_address, bonus, master) {
 
-        const contract = await Staking.findOne({
-            where: {
-                name: name
-            }
-        });
+        const contract = await this.getContract(contract_address);
   
         const chain = await SystemNetwork.findByPk(contract.network_id);
         var web3 = new Web3(chain.provider);

@@ -11,43 +11,43 @@ import { response } from "express";
 
 class StakingController {
 
-    async TestController(name) {
+    // async TestController(name) {
 
-        const pk = await SystemWallet.findOne(
-            {
-                where: {
-                    name: 'coinage'
-                }
-            }
-        );
+    //     const pk = await SystemWallet.findOne(
+    //         {
+    //             where: {
+    //                 name: 'coinage'
+    //             }
+    //         }
+    //     );
 
-        console.log(pk)
+    //     console.log(pk)
 
-        const contract = await Token.findByPk(5);
-        const chain = await SystemNetwork.findByPk(3);
+    //     const contract = await Token.findByPk(5);
+    //     const chain = await SystemNetwork.findByPk(3);
 
-        var web3 = new Web3(chain.provider);
+    //     var web3 = new Web3(chain.provider);
 
-        const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
+    //     const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
 
-        const contractData = await myContract.methods.grantRole('0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6', '0xD11c920992a1Fab90Ac41ed2B5D618dD9c1a80Ec').encodeABI();
+    //     const contractData = await myContract.methods.grantRole('0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6', '0xD11c920992a1Fab90Ac41ed2B5D618dD9c1a80Ec').encodeABI();
         
-        const rawTransaction = {
-            from: pk.address,
-            to: contract.contract_address,
-            gas: web3.utils.toHex(77806),
-            gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
-            data: contractData,
-        }
+    //     const rawTransaction = {
+    //         from: pk.address,
+    //         to: contract.contract_address,
+    //         gas: web3.utils.toHex(77806),
+    //         gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
+    //         data: contractData,
+    //     }
 
-        const signed = await web3.eth.accounts.signTransaction(rawTransaction, pk.priv)
-        const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
+    //     const signed = await web3.eth.accounts.signTransaction(rawTransaction, pk.priv)
+    //     const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
 
 
-        return (responseData);
-    }
+    //     return (responseData);
+    // }
 
-    //grantRole \/
+    //grantRole stake token => contract
     // async TestController(name) {
 
     //     const pk = await SystemWallet.findOne(
@@ -67,7 +67,44 @@ class StakingController {
 
     //     const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
 
-    //     const contractData = await myContract.methods.grantRole('0x8502233096d909befbda0999bb8ea2f3a6be3c138b9fbf003752a4c8bce86f6c', '0xD11c920992a1Fab90Ac41ed2B5D618dD9c1a80Ec').encodeABI();
+    //     const contractData = await myContract.methods.grantRole('0x8502233096d909befbda0999bb8ea2f3a6be3c138b9fbf003752a4c8bce86f6c', '0xBcB585BC64A0Efee0C2e813ec51D003D3A059D7f').encodeABI();
+        
+    //     const rawTransaction = {
+    //         from: pk.address,
+    //         to: contract.contract_address,
+    //         gas: web3.utils.toHex(77806),
+    //         gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
+    //         data: contractData,
+    //     }
+
+    //     const signed = await web3.eth.accounts.signTransaction(rawTransaction, pk.priv)
+    //     const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
+
+
+    //     return (responseData);
+    // }
+
+    // grantRole
+    // async TestController(name) {
+
+    //     const pk = await SystemWallet.findOne(
+    //         {
+    //             where: {
+    //                 name: 'coinage'
+    //             }
+    //         }
+    //     );
+
+    //     console.log(pk)
+
+    //     const contract = await Token.findByPk(4);
+    //     const chain = await SystemNetwork.findByPk(3);
+
+    //     var web3 = new Web3(chain.provider);
+
+    //     const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
+
+    //     const contractData = await myContract.methods.grantRole('0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6', '0xBcB585BC64A0Efee0C2e813ec51D003D3A059D7f').encodeABI();
         
     //     const rawTransaction = {
     //         from: pk.address,
@@ -696,11 +733,6 @@ class StakingController {
 
         return (responseData);
     }
-
-
-
-
-
 
     async listAllContracts() {
         try {

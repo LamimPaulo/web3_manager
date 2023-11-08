@@ -23,20 +23,15 @@ class WalletController {
         return data.address;
     }
 
-    async getBalanceByContract(address, contract_addr, network)
+    async getBalanceByContract(address, contract_addr)
     {
-        const token = await Token.findOne({
-            where: {
-                contract_address: contract_addr
-            }
-        });
+        const token = await this.getContractV2(contract_addr);
+        
+        if(!token || token == null){
+            throw new Error('invalid token!')
+        }
 
-        const chain = await SystemNetwork.findOne({
-            where: {
-                name: network,
-            }
-        });
-
+        const chain = await SystemNetwork.findByPk(token.network_id);
         const web3 = new Web3(chain.provider);
 
 
@@ -46,48 +41,36 @@ class WalletController {
 
 
         return {
-            status: 200,
-            message: 'ok',
             token: token.name,
             balance: token_balance,
-            bnb: balance,
+            chain_coin: balance,
         };
     }
 
-    async getMasterBalanceByContract(contract_addr, network, master)
+    async getMasterBalanceByContract(contract_addr, master)
     {
         try {
-            const token = await Token.findOne({
-                where: {
-                    contract_address: contract_addr
-                }
-            });
-
-            const chain = await SystemNetwork.findOne({
-                where: {
-                    name: network,
-                }
-            });
-
+            const token = await this.getContractV2(contract_addr);
+        
+            if(!token || token == null){
+                throw new Error('invalid token!')
+            }
+    
+            const chain = await SystemNetwork.findByPk(token.network_id);
             const web3 = new Web3(chain.provider);
             
             const balance = await web3.eth.getBalance(master.address);
-            var token_balance = 0
-            var token_name = null
-            if(token){
-                const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
-                token_balance = await web3_token.methods.balanceOf(master.address).call()
-            } else {
-                token_name = chain.name == 'BEP20' ? 'BNB' : chain.name == 'ERC20' ? 'ETH' : chain.name
-                token_balance = balance;
-            }
+
+            const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
+            const token_balance = await web3_token.methods.balanceOf(master.address).call()
 
             return {
                 status: 200,
                 message: 'system wallet',
-                token: token_name ?? token.name,
-                balance: web3.utils.fromWei(token_balance) ?? 0,
-                bnb: web3.utils.fromWei(balance),
+                // token: token_name ?? token.name,
+                token: token.name,
+                token_balance: web3.utils.fromWei(token_balance, 'ether'),
+                chain_balance: web3.utils.fromWei(balance, 'ether'),
             };
 
         } catch (error) {
@@ -136,39 +119,14 @@ class WalletController {
         return balance
     }
 
-    async getSystemBalance() {
-        const master = await SystemWallet.findOne({
-            where: {
-                name: 'master',
-            }
-        })
-
-        const web3 = new Web3(process.env.PROVIDER_URL);
-        const balance = await web3.eth.getBalance(master.address);
-
-        const usdt = new web3.eth.Contract(JSON.parse(process.env.USDT_ABI_ENCODED), process.env.USDT_ADDRESS);
-        const usdtBalance = await usdt.methods.balanceOf(master.address).call()
-
-        const data = {
-            bnb: await web3.utils.fromWei(balance),
-            usdt: await web3.utils.fromWei(usdtBalance)
+    async getAllowanceByToken(address, contract, master) {
+        const token = await this.getContractV2(contract);
+        
+        if(!token || token == null){
+            throw new Error('invalid token!')
         }
 
-        return data
-    }
-
-    async getAllowanceByToken(address, contract, network, master) {
-        const token = await Token.findOne({
-            where: {
-                contract_address: contract
-            }
-        });
-
-        const chain = await SystemNetwork.findOne({
-            where: {
-                name: network,
-            }
-        });
+        const chain = await SystemNetwork.findByPk(token.network_id);
         const web3 = new Web3(chain.provider);
 
         const contract_std = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
@@ -186,45 +144,15 @@ class WalletController {
 
         return true
     }
-
-    async getContract(abbr){
-        var contract = ''
-        switch (abbr) {
-            case 'USDT':
-                contract = process.env.USDT_ADDRESS
-                break;
-            case 'NFT':
-                contract = process.env.NFT_CONTRACT_ADDRESS
-                break;
-            case 'BTCC':
-                contract = process.env.BTCC_CONTRACT_ADDRESS
-                break;
-            default:
-                contract = process.env.USDT_ADDRESS
-                break;
+    
+    async getContractV2(address){
+        const contract = await Token.findOne({
+            where: {
+                contract_address: address,
             }
+        });
 
-            return contract
-    }
-
-    async getABI(abbr){
-        var ABI = ''
-        switch (abbr) {
-            case 'USDT':
-                ABI = process.env.USDT_ABI_ENCODED
-                break;
-            case 'NFT':
-                ABI = process.env.NFT_CONTRACT_ABI
-                break;
-            case 'BTCC':
-                ABI = process.env.BTCC_CONTRACT_ABI
-                break;
-            default:
-                ABI = process.env.USDT_ABI_ENCODED
-                break;
-            }
-
-            return ABI
+        return contract
     }
 
     async checkReceivedTransactionsByToken() {
@@ -403,6 +331,8 @@ class WalletController {
 
             req.write(data);
             req.end();
+
+            
             return  req
         } catch (error) {
             console.error(error);

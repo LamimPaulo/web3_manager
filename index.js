@@ -137,8 +137,8 @@ app.get('/newhash', async (req, res) => {
 });
 
 app.get('/address', async (req, res) => {
-    return res.send(walletController.createAddress(req.master));
-  });
+  return res.send(walletController.createAddress(req.master));
+});
 
 app.post('/getbalance',async (req, res) => {
   const { address, abbr } = req.body;
@@ -176,9 +176,28 @@ app.post('/getbalanceByToken',async (req, res) => {
   });
 });
 
+app.post('/getbalanceByContract',async (req, res) => {
+  const { address, contract } = req.body;
+  
+  try {
+    const data = await walletController.getBalanceByContract(address, contract, req.master)
+    return res.send({
+      status: 'ok',
+      message: 'success',
+      data: data,
+    });
+  } catch (error) {
+    return res.send(400, {
+      status: 'error',
+      message: error.message,
+    });
+    
+  }
+});
+
 app.post('/getMasterBalanceByToken',async (req, res) => {
-  const {contract, network} = req.body;
-  const data = await walletController.getMasterBalanceByContract(contract, network, req.master);
+  const {contract_address} = req.body;
+  const data = await walletController.getMasterBalanceByContract(contract, req.master);
   return res.send({
     status: 'ok',
     message: 'success',
@@ -198,21 +217,12 @@ app.post('/getintransactions',async (req, res) => {
   });
 });
 
-app.post('/system/balance',async (req, res) => {
-  const { address } = req.body;
-  return res.send({
-    status: 'ok',
-    message: 'success',
-    data: await walletController.getSystemBalance(address)
-  });
-});
-
 app.post('/get-allowance',async (req, res) => {
-  const { owner, abbr } = req.body;
+  const { user_address, contract } = req.body;
   return res.send({
     status: 'ok',
     message: 'success',
-    data: await walletController.getAllowance(owner, abbr)
+    data: await walletController.getAllowanceByToken(user_address, contract, req.master)
   });
 });
 
@@ -578,8 +588,6 @@ app.post('/staking/unstake', async (req, res) => {
 
 
 
-
-
 app.post('/TransferNoGasBRLFromInfinityWallet', async (req, res) => {
     const {target_address, amount} = req.body;
     return await transactionController.TransferNoGasBRLFromInfinityWallet(target_address, amount, req.master)
@@ -593,7 +601,7 @@ app.post('/TransferNoGasBRLFromInfinityWallet', async (req, res) => {
     })
 });
 
-app.post('/TransferNoGasBRLToInfinityWallet', async (req, res) => {
+app.post('/TransferNoGasBRLToCoinageWallet', async (req, res) => {
     const {target_address, amount} = req.body;
     return await transactionController.TransferNoGasBRLToInfinityWallet(target_address, amount, req.master)
     .then((sign) => {

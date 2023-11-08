@@ -643,7 +643,7 @@ class TransactionController {
         return {ok: true, data: responseData}
     }
 
-    async TransferNoGasBRLToInfinityWallet(address, amount, master){
+    async TransferNoGasBRLToInfinityFromCoinage(address, amount, master){
         const token = await Token.findOne({
             where: {
                 contract_address: '0xbC111C9E7eADc2f457BEB6e363d370F0E62E213e'
@@ -656,25 +656,37 @@ class TransactionController {
             }
         });
 
+        const infinity = await SystemWallet.findOne({
+            where:{
+                name: 'infinity',
+            }
+        })
+
+        const coinage = await SystemWallet.findOne({
+            where:{
+                name: 'coinage',
+            }
+        })
+
         var web3 = new Web3(chain.provider);
         web3.defaultAccount = master.address
         const myContract = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
 
         const contractData = await myContract.methods.transferFromNoGas(
-                address,
-                master.address,
+                coinage.address,
+                infinity.address,
                 web3.utils.toHex(web3.utils.toWei(amount, 'ether')),
             ).encodeABI();
 
         const rawTransaction = {
-            from: master.address,
+            from: coinage.address,
             to: token.contract_address,
             gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
             gas: web3.utils.toHex(77806),
             data: contractData,
         }
 
-        const signed = await web3.eth.accounts.signTransaction(rawTransaction, master.priv)
+        const signed = await web3.eth.accounts.signTransaction(rawTransaction, coinage.priv)
         const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
 
         return {ok: true, data: responseData}

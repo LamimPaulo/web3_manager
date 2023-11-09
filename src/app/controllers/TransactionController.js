@@ -647,7 +647,7 @@ class TransactionController {
         const token = await Token.findOne({
             where: {
                 // [Op.or]:{
-                    name: 'Coinage BRL',
+                    name: 'CBRL',
                     // contract_address: '0x0c16A24189847E65A66901CdE49Ef910C495C17D',
                     // contract_address: '0xbC111C9E7eADc2f457BEB6e363d370F0E62E213e',
                 // }

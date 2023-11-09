@@ -643,46 +643,58 @@ class TransactionController {
         return {ok: true, data: responseData}
     }
 
-    async TransferNoGasBRLToInfinityFromCoinage(address, amount, master){
+    async TransferNoGasBRLToInfinityFromCoinage(amount){
         const token = await Token.findOne({
             where: {
-                contract_address: '0xbC111C9E7eADc2f457BEB6e363d370F0E62E213e'
+                // [Op.or]:{
+                    name: 'Coinage BRL',
+                    // contract_address: '0x0c16A24189847E65A66901CdE49Ef910C495C17D',
+                    // contract_address: '0xbC111C9E7eADc2f457BEB6e363d370F0E62E213e',
+                // }
             }
         });
 
-        const chain = await SystemNetwork.findOne({
-            where: {
-                name: 'BEP20',
-            }
-        });
+        console.log(token.contract_address);
+
+        const chain = await SystemNetwork.findByPk(token.network_id);
 
         const infinity = await SystemWallet.findOne({
             where:{
                 name: 'infinity',
             }
-        })
-
+        });
         const coinage = await SystemWallet.findOne({
             where:{
                 name: 'coinage',
             }
-        })
+        });
 
         var web3 = new Web3(chain.provider);
-        web3.defaultAccount = master.address
         const myContract = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
 
-        const contractData = await myContract.methods.transferFromNoGas(
-                coinage.address,
+        const contractIstance = await myContract.methods.transfer(
+                // coinage.address,
                 infinity.address,
                 web3.utils.toHex(web3.utils.toWei(amount, 'ether')),
-            ).encodeABI();
+            );
+
+            const contractData = await contractIstance.encodeABI();
+    
+            const estimatedGas = await contractIstance.estimateGas(
+                {
+                    from: coinage.address,
+                    gasPrice: web3.eth.gas_price
+    
+                }, function(error, estimatedGas) {
+                    console.log(error, estimatedGas);
+                }
+            );
 
         const rawTransaction = {
             from: coinage.address,
             to: token.contract_address,
-            gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
-            gas: web3.utils.toHex(77806),
+            // gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
+            gas: web3.utils.toHex(estimatedGas),
             data: contractData,
         }
 

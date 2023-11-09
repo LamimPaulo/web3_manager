@@ -603,7 +603,7 @@ app.post('/TransferNoGasBRLFromInfinityWallet', async (req, res) => {
 
 app.post('/TransferNoGasBRLToCoinageWallet', async (req, res) => {
     const {amount} = req.body;
-    return await transactionController.TransferNoGasBRLToInfinityFromCoinage(amount, req.master)
+    return await transactionController.TransferNoGasBRLToInfinityFromCoinage(amount)
     .then((sign) => {
         return res.send(sign);
     }).catch((error) => {

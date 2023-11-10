@@ -350,8 +350,8 @@ class StakingController {
 
         const myContract = new web3.eth.Contract(JSON.parse(contract.contract_abi), contract.contract_address);
 
-        const contractData = await myContract.methods.accumulateReward().encodeABI();
-        const estimatedGas = await myContract.methods.accumulateReward().estimateGas(
+        const contractData = await myContract.methods.claimAllReward().encodeABI();
+        const estimatedGas = await myContract.methods.claimAllReward().estimateGas(
             {
                 from: master.address,
                 gasPrice: web3.eth.gas_price

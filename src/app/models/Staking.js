@@ -9,6 +9,8 @@ class Staking extends Model {
             contract_address: Sequelize.TEXT('long'),
             contract_abi: Sequelize.JSON(),
             is_active: Sequelize.BOOLEAN(),
+            reward_address: Sequelize.TEXT('long'),
+            reward_abi: Sequelize.JSON(),
         },
         {
             sequelize,

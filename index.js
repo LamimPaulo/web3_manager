@@ -585,6 +585,23 @@ app.post('/staking/unstake', async (req, res) => {
     })
 });
 
+app.post('/staking/listenRewardEvents', async (req, res) => {
+  const {contract_address} = req.body;
+      return await stakingController.listenRewardEvents(contract_address)
+      .then((response) => {
+        return res.send({
+          message: 'success',
+          data: response
+        });
+    }).catch((error) => {
+      console.error(error);
+        return res.status(400).send({
+          ok: false,
+          data: error.message,
+        });
+    })
+});
+
 
 
 

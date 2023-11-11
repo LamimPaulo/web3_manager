@@ -11,6 +11,7 @@ import amqp from "amqplib";
 import TransactionController from "./TransactionController.js";
 import { Transaction } from "ethereumjs-tx";
 import NetworkGas from "../models/NetworkGas.js";
+import Staking from "../models/Staking.js";
 
 class WalletController {
 
@@ -190,12 +191,9 @@ class WalletController {
                 const chain_balance = await (web3.eth.getBalance(wallet.address));
 
                 console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(chain_balance)+' '+network.name);
-                console.log(web3.utils.fromWei(chain_balance) >= network.address);
                 if(web3.utils.fromWei(chain_balance) >= network.address){ // network.address has a string with the minimun acceptable to notify
                     // const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey=' {
                         var url = next().url+'api?module=account&action=txlist'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key
-                        console.log('entrou');
-                        console.log(url);
                         const response = await fetch(url, {
                             method: 'get',
                             headers: {'Content-Type': 'application/json'}
@@ -203,7 +201,6 @@ class WalletController {
 
                         const res = await response.json();
 
-                        // console.log(res);
                     if(res.result){
                         const sWallet = await SystemWallet.findAll();
                         for(const r of res.result) {
@@ -228,7 +225,7 @@ class WalletController {
 
                                     const master = await SystemWallet.findByPk(wallet.system_wallet_id);
                                     const notified = await this.notifyExchange(JSON.stringify(r), master.host);
-                                    console.log(notified);
+                                    // console.log(notified);
 
                                     if(notified == 'Já notificado'){
                                         console.log('foi true');
@@ -272,8 +269,22 @@ class WalletController {
                                     console.log('CBRL ignored')
                                 }
                                 else{
-                                    // console.log('contractAddress');
-                                    // console.log(r.contractAddress);
+                                    if(network.name = 'POLYGON') {
+                                        const reward_c = await Staking.findOne({
+                                            where:{
+                                                reward_address: r.contractAddress
+                                            }
+                                        })
+
+                                        //é reward de staking?!
+                                        if(reward_c) {
+                                            // console.log(reward_c);
+                                            var web33 = new Web3(network.provider);
+                                            const extract = await web33.eth.getTransactionReceipt(r.hash);
+                                            console.log('extract', extract.to);
+                                            r.interactWith = extract.to
+                                        }
+                                    }
                                     const w3 = new Web3(process.env.PROVIDER_URL);
                                     r.value = w3.utils.fromWei(r.value)
                                     r.gasPrice = w3.utils.fromWei(r.gasPrice)
@@ -289,7 +300,7 @@ class WalletController {
                                         console.log('foi true');
                                     } else{
                                         console.log('foi false');
-                                        console.log(notified);
+                                        // console.log(notified);
                                     }
                                 }
                             }

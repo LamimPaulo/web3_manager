@@ -736,10 +736,32 @@ class StakingController {
 
     async listAllContracts() {
         try {
-
             const contracts = Staking.findAll({attributes: ['name', 'contract_address']});
 
             return contracts;
+        } catch (error) {
+            console.log('error')
+            console.log(error.message)
+            let message = JSON.parse(err.message.substring(56).trim().replace("'", "")).value.data.data;
+            console.log(message[Object.keys(message)[0]].reason);
+            return error
+        }
+    }
+
+    async listenRewardEvents(contract_address) {
+        try {
+            const contract = await this.getContract(contract_address);
+  
+            const chain = await SystemNetwork.findByPk(contract.network_id);
+            var web3 = new Web3(chain.provider);
+
+            const myContract = new web3.eth.Contract(JSON.parse(contract.reward_abi), contract.reward_address);
+
+            myContract.events.Transfer()
+                .on("connected", function(subscriptionId){ console.log(subscriptionId);})
+                .on('data', function(event){ console.log(event);})
+
+
         } catch (error) {
             console.log('error')
             console.log(error.message)

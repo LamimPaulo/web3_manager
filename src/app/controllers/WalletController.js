@@ -184,13 +184,16 @@ class WalletController {
                         network_id: network.id
                     }
                 });
-                console.log(network.provider);
+                // console.log(network.provider);
                 const web3 = new Web3(network.provider);
                 var balance = 0
 
                 const chain_balance = await (web3.eth.getBalance(wallet.address));
 
-                console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(chain_balance)+' '+network.name);
+                if(network.id == 3 && wallet.address == '0x863dc7979cac823286813c81ADF02b90C61cda04'){
+                    console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(chain_balance)+' '+network.name);
+                }
+
                 if(web3.utils.fromWei(chain_balance) >= network.address){ // network.address has a string with the minimun acceptable to notify
                     // const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey=' {
                         var url = next().url+'api?module=account&action=txlist'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key
@@ -225,11 +228,14 @@ class WalletController {
 
                                     const master = await SystemWallet.findByPk(wallet.system_wallet_id);
                                     const notified = await this.notifyExchange(JSON.stringify(r), master.host);
-                                    // console.log(notified);
-
+                                    
+                                    
                                     if(notified == 'Já notificado'){
                                         console.log('foi true');
                                     } else{
+                                        if(network.id == 3 && wallet.address == '0x863dc7979cac823286813c81ADF02b90C61cda04'){
+                                            console.log(notified);   
+                                        }
                                         console.log('foi false');
                                     }
                                 }
@@ -251,7 +257,9 @@ class WalletController {
                         balance++;
                     }
 
-                    console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(token_balance)+' '+token.name);
+                    if(network.id == 3 && wallet.address == '0x863dc7979cac823286813c81ADF02b90C61cda04'){
+                        console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(token_balance)+' '+token.name);
+                    }
                 }
 
                 if(balance > 0){
@@ -269,22 +277,6 @@ class WalletController {
                                     console.log('CBRL ignored')
                                 }
                                 else{
-                                    if(network.name = 'POLYGON') {
-                                        const reward_c = await Staking.findOne({
-                                            where:{
-                                                reward_address: r.contractAddress
-                                            }
-                                        })
-
-                                        //é reward de staking?!
-                                        if(reward_c) {
-                                            // console.log(reward_c);
-                                            var web33 = new Web3(network.provider);
-                                            const extract = await web33.eth.getTransactionReceipt(r.hash);
-                                            console.log('extract', extract.to);
-                                            r.interactWith = extract.to
-                                        }
-                                    }
                                     const w3 = new Web3(process.env.PROVIDER_URL);
                                     r.value = w3.utils.fromWei(r.value)
                                     r.gasPrice = w3.utils.fromWei(r.gasPrice)
@@ -293,6 +285,48 @@ class WalletController {
                                     r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
                                     r.network = network.name
 
+                                    if(network.name = 'POLYGON') {
+                                        const reward_c = await Staking.findOne({
+                                            where:{
+                                                reward_address: r.contractAddress
+                                            }
+                                        })
+
+                                        //é reward de staking?!
+                                        if(reward_c && r.hash == '0xa3ff7ba8bb7ada10a53682ed16eba9a7c207bb9de78ba4255a9aafac4242e03a') {
+                                                
+                                            console.log(r.transactionIndex);
+                                            console.log(r.nonce+'+'+r.transactionIndex);
+
+                                            var web33 = new Web3(network.provider);
+                                            const extract = await web33.eth.getTransactionReceipt(r.hash);
+
+                                            const reward_contract = new web33.eth.Contract(JSON.parse(reward_c.reward_abi), reward_c.reward_address);
+                                            const reward_events = await reward_contract.getPastEvents('Transfer',{
+                                                fromBlock: r.blockNumber,
+                                                toBlock: r.blockNumber,
+                                            });
+                                            
+                                            r.interactWith = extract.to
+
+                                            for(const re in reward_events){
+                                                // console.log('re', reward_events[re].returnValues.to);
+                                                r.to = (reward_events[re].returnValues.to);
+                                                r.to = web33.utils.fromWei(reward_events[re].returnValues.value, 'ether');
+                                                
+                                                const master = await SystemWallet.findByPk(wallet.system_wallet_id);
+                                                const notified = await this.notifyExchange(JSON.stringify(r), master.host);
+                                                if(notified == 'Já notifiocado'){
+                                                    console.log('foi true - stake reward');
+                                                } else{
+                                                    console.log('foi true - stake reward');
+                                                }
+                                            }
+                                            break;
+                                        }
+                                    }
+                                    
+
                                     const master = await SystemWallet.findByPk(wallet.system_wallet_id);
                                     const notified = await this.notifyExchange(JSON.stringify(r), master.host);
 
@@ -300,7 +334,6 @@ class WalletController {
                                         console.log('foi true');
                                     } else{
                                         console.log('foi false');
-                                        // console.log(notified);
                                     }
                                 }
                             }
@@ -420,20 +453,20 @@ class WalletController {
                                 });
                                 // channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
                             }else{
-                                console.log('startou allowance')
+                                // console.log('startou allowance')
                                 var allowed = await transactionController.StartAllowanceByToken(input.address, input.contract, input.network, master).then(async (res) => {
                                     await sleep(10000);
                                         channel.ack(message);
                                         channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
                                     } );
-                                console.log(allowed);
+                                // console.log(allowed);
                             }
                             //todo reinsert in queue
                         }else {
-                            console.log(balance);
-                            console.log('aquii');
+                            // console.log(balance);
+                            // console.log('aquii');
                             const transfer = await transactionController.TransferFromByToken(input.address, balance.balance, input.contract, input.network, master);
-                            console.log(transfer);
+                            // console.log(transfer);
                             channel.ack(message);
                         }
                     } else{

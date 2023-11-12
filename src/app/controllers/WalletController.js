@@ -312,11 +312,14 @@ class WalletController {
                                             for(const re in reward_events){
                                                 // console.log('re', reward_events[re].returnValues.to);
                                                 r.to = (reward_events[re].returnValues.to);
-                                                r.to = web33.utils.fromWei(reward_events[re].returnValues.value, 'ether');
+                                                r.value = web33.utils.fromWei(reward_events[re].returnValues.value, 'ether');
                                                 
                                                 const master = await SystemWallet.findByPk(wallet.system_wallet_id);
                                                 const notified = await this.notifyExchange(JSON.stringify(r), master.host);
-                                                if(notified == 'Já notifiocado'){
+                                                
+                                                console.log(notified)
+                                                
+                                                if(notified == 'Já notificado'){
                                                     console.log('foi true - stake reward');
                                                 } else{
                                                     console.log('foi true - stake reward');
@@ -325,13 +328,15 @@ class WalletController {
                                             break;
                                         }
                                     }
-                                    
 
                                     const master = await SystemWallet.findByPk(wallet.system_wallet_id);
                                     const notified = await this.notifyExchange(JSON.stringify(r), master.host);
+                                    
+                                    console.log(notified)
 
-                                    if(notified == 'Já notifiocado'){
-                                        console.log('foi true');
+                                    if(notified == 'já notificado'){
+                                        // console.log('foi true');
+                                        console.log(notified)
                                     } else{
                                         console.log('foi false');
                                     }

@@ -317,12 +317,10 @@ class WalletController {
                                                 const master = await SystemWallet.findByPk(wallet.system_wallet_id);
                                                 const notified = await this.notifyExchange(JSON.stringify(r), master.host);
                                                 
-                                                console.log(notified)
-                                                
                                                 if(notified == 'Já notificado'){
-                                                    console.log('foi true - stake reward');
+                                                    console.log('já notificado');
                                                 } else{
-                                                    console.log('foi true - stake reward');
+                                                    console.log('nova notificação concluida');
                                                 }
                                             }
                                             break;
@@ -331,11 +329,8 @@ class WalletController {
 
                                     const master = await SystemWallet.findByPk(wallet.system_wallet_id);
                                     const notified = await this.notifyExchange(JSON.stringify(r), master.host);
-                                    
-                                    console.log(notified)
 
                                     if(notified == 'já notificado'){
-                                        // console.log('foi true');
                                         console.log(notified)
                                     } else{
                                         console.log('foi false');

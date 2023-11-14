@@ -293,7 +293,7 @@ class WalletController {
                                         })
 
                                         //é reward de staking?!
-                                        if(reward_c && r.hash == '0xa3ff7ba8bb7ada10a53682ed16eba9a7c207bb9de78ba4255a9aafac4242e03a') {
+                                        if(reward_c) {
                                                 
                                             console.log(r.transactionIndex);
                                             console.log(r.nonce+'+'+r.transactionIndex);

@@ -323,7 +323,7 @@ class WalletController {
                                                     console.log('nova notificação concluida');
                                                 }
                                             }
-                                            continue;
+                                            // continue;
                                         }
                                     }
 

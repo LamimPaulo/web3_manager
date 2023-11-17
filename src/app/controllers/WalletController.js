@@ -320,6 +320,7 @@ class WalletController {
                                                 if(notified == 'Já notificado'){
                                                     console.log('já notificado');
                                                 } else{
+                                                    console.log('notified', notified);
                                                     console.log('nova notificação concluida');
                                                 }
                                             }

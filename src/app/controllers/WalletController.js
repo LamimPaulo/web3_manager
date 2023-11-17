@@ -414,7 +414,7 @@ class WalletController {
                 // "{\"address\":\"0x3661431F9c87d6826351dC3ACcaed8956150BBe4\",\"contract\":\"BEP20\",\"network\":\"BEP20\"}"
                 const web3 = new Web3();
                 const transactionController = new TransactionController();
-                if(input.contract == 'BEP20' || input.contract == 'ERC20'){
+                if(input.contract == 'BEP20' || input.contract == 'ERC20'|| input.contract == 'ERC20'){
                     const balance = await this.getBalance(input.address, input.network);
                     const chain = await SystemNetwork.findOne({
                         where: {

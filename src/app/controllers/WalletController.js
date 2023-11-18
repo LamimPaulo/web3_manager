@@ -194,62 +194,59 @@ class WalletController {
 
                 console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(chain_balance)+' '+network.name);
 
-                // if(web3.utils.fromWei(chain_balance) >= network.address){ // network.address has a string with the minimun acceptable to notify
-                //     // const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey=' {
-                //         var url = next().url+'api?module=account&action=txlist'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key
-                //         const response = await fetch(url, {
-                //             method: 'get',
-                //             headers: {'Content-Type': 'application/json'}
-                //         });
+                if(web3.utils.fromWei(chain_balance) >= network.address){ // network.address has a string with the minimun acceptable to notify
+                    // const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey=' {
+                        var url = next().url+'api?module=account&action=txlist'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey='+next().key
+                        const response = await fetch(url, {
+                            method: 'get',
+                            headers: {'Content-Type': 'application/json'}
+                        });
 
-                //         const res = await response.json();
+                        const res = await response.json();
 
-                //     if(res.result){
-                //         const sWallet = await SystemWallet.findAll();
-                //         for(const r of res.result) {
-                //             if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase()){
-                //                 for( const sw of sWallet){
-                //                     if(r.from.toLowerCase == sw.address){
-                //                     }
-                //                 }
-                //                 if(r.from.toLowerCase == '0xbc111c9e7eadc2f457beb6e363d370f0e62e213e'){
-                //                 // if(false){
-                //                     console.log('CBRL ignored')
-                //                 }
-                //                 else{
-                //                     const w3 = new Web3(process.env.PROVIDER_URL);
-                //                     r.value = w3.utils.fromWei(r.value)
-                //                     r.gasPrice = w3.utils.fromWei(r.gasPrice)
-                //                     r.gasUsed = w3.utils.fromWei(r.gasUsed)
-                //                     r.gas = w3.utils.fromWei(r.gas)
-                //                     r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
-                //                     r.network = network.name
-                //                     r.contractAddress = network.name
+                    if(res.result){
+                        const sWallet = await SystemWallet.findAll();
+                        for(const r of res.result) {
+                            if(r.value > 0 && r.to.toLowerCase() == wallet.address.toLowerCase()){
+                                for( const sw of sWallet){
+                                    if(r.from.toLowerCase == sw.address){
+                                    }
+                                }
+                                if(r.from.toLowerCase == '0xbc111c9e7eadc2f457beb6e363d370f0e62e213e'){
+                                // if(false){
+                                    console.log('CBRL ignored')
+                                }
+                                else{
+                                    const w3 = new Web3(process.env.PROVIDER_URL);
+                                    r.value = w3.utils.fromWei(r.value)
+                                    r.gasPrice = w3.utils.fromWei(r.gasPrice)
+                                    r.gasUsed = w3.utils.fromWei(r.gasUsed)
+                                    r.gas = w3.utils.fromWei(r.gas)
+                                    r.cumulativeGasUsed = w3.utils.fromWei(r.cumulativeGasUsed)
+                                    r.network = network.name
+                                    r.contractAddress = network.name
 
-                //                     const master = await SystemWallet.findByPk(wallet.system_wallet_id);
-                //                     const notified = await this.notifyExchange(JSON.stringify(r), master.host);
+                                    const master = await SystemWallet.findByPk(wallet.system_wallet_id);
+                                    const notified = await this.notifyExchange(JSON.stringify(r), master.host);
                                     
                                     
-                //                     if(notified == 'Já notificado'){
-                //                         console.log(notified);   
-                //                         console.log('foi true');
-                //                     } else{
-                //                         console.log(notified);   
-                //                         console.log('foi false');
-                //                     }
-                //                 }
-                //             }
-                //         };
-                //     }
+                                    if(notified == 'Já notificado'){
+                                        console.log(notified);   
+                                        console.log('foi true');
+                                    } else{
+                                        console.log(notified);   
+                                        console.log('foi false');
+                                    }
+                                }
+                            }
+                        };
+                    }
 
-                // }
+                }
 
                 for(const token of tokens){
-                    // console.log(token.name);
-                    // console.log(token.contract_address);
                     const web3_token = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
                     const token_balance = await web3_token.methods.balanceOf(wallet.address).call()
-                    // console.log(token_balance);
 
                     // if(token_balance > 0 && token.name != 'CBRL'){
                     if(token_balance > 0){
@@ -320,7 +317,7 @@ class WalletController {
                                                     console.log('nova notificação concluida');
                                                 }
                                             }
-                                            // continue;
+                                            continue;
                                         }
                                     }
 

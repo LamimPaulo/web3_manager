@@ -190,9 +190,7 @@ class WalletController {
 
                 const chain_balance = await (web3.eth.getBalance(wallet.address));
 
-                if(network.id == 3 && wallet.address == '0x863dc7979cac823286813c81ADF02b90C61cda04'){
-                    console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(chain_balance)+' '+network.name);
-                }
+                console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(chain_balance)+' '+network.name);
 
                 if(web3.utils.fromWei(chain_balance) >= network.address){ // network.address has a string with the minimun acceptable to notify
                     // const response = await fetch(next().url+'api?module=account&action=tokentx'+'&address='+wallet.address+'&page=1&offset=0&startblock=0&endblock=999999999&sort=desc&apikey=' {
@@ -231,11 +229,10 @@ class WalletController {
                                     
                                     
                                     if(notified == 'Já notificado'){
+                                        console.log(notified);   
                                         console.log('foi true');
                                     } else{
-                                        if(network.id == 3 && wallet.address == '0x863dc7979cac823286813c81ADF02b90C61cda04'){
-                                            console.log(notified);   
-                                        }
+                                        console.log(notified);   
                                         console.log('foi false');
                                     }
                                 }
@@ -257,9 +254,7 @@ class WalletController {
                         balance++;
                     }
 
-                    if(network.id == 3 && wallet.address == '0x863dc7979cac823286813c81ADF02b90C61cda04'){
-                        console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(token_balance)+' '+token.name);
-                    }
+                    console.log('balance wallet '+wallet.address+': '+web3.utils.fromWei(token_balance)+' '+token.name);
                 }
 
                 if(balance > 0){
@@ -334,6 +329,7 @@ class WalletController {
                                     if(notified == 'já notificado'){
                                         console.log(notified)
                                     } else{
+                                        console.log(notified)
                                         console.log('foi false');
                                     }
                                 }
@@ -414,7 +410,7 @@ class WalletController {
                 // "{\"address\":\"0x3661431F9c87d6826351dC3ACcaed8956150BBe4\",\"contract\":\"BEP20\",\"network\":\"BEP20\"}"
                 const web3 = new Web3();
                 const transactionController = new TransactionController();
-                if(input.contract == 'BEP20' || input.contract == 'ERC20'|| input.contract == 'ERC20'){
+                if(input.contract == 'BEP20' || input.contract == 'ERC20'|| input.contract == 'POLYGON'){
                     const balance = await this.getBalance(input.address, input.network);
                     const chain = await SystemNetwork.findOne({
                         where: {

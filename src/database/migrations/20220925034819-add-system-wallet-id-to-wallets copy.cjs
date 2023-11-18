@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.addColumn("wallets", "system_wallet_id_", {
+  up: (queryInterface, Sequelize) => queryInterface.addColumn("wallets", "system_wallet_id", {
     type: Sequelize.INTEGER,
     // references: {
     //   model:{

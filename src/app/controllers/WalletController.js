@@ -249,8 +249,8 @@ class WalletController {
                     const token_balance = await web3_token.methods.balanceOf(wallet.address).call()
                     // console.log(token_balance);
 
-                    if(token_balance > 0 && token.name != 'CBRL'){
-                    // if(token_balance > 0){
+                    // if(token_balance > 0 && token.name != 'CBRL'){
+                    if(token_balance > 0){
                         balance++;
                     }
 

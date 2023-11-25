@@ -203,11 +203,27 @@ class TransactionController {
                     web3.utils.toHex(web3.utils.toWei(amount, 'ether')),
                 ).encodeABI();
 
+            const estimatedGas = await myContract.methods.transfer(
+                    target_address,
+                    web3.utils.toHex(web3.utils.toWei(amount, 'ether')),
+                ).estimateGas(
+                    {
+                        from: master.address,
+                        gasPrice: web3.eth.gas_price
+        
+                    }, function(error, estimatedGas) {
+                        console.log(error, estimatedGas);
+                    }
+                );
+                console.log( 'estimatedGas', estimatedGas);
+                ;
+
             const rawTransaction = {
                 from: master.address,
                 to: token.contract_address,
-                gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
-                gas: web3.utils.toHex(77806),
+                gas: web3.utils.toHex(estimatedGas),
+                // gasPrice: web3.utils.toHex(web3.utils.toWei('140', 'Gwei')),
+                gasPrice: web3.eth.gas_price,
                 data: contractData,
             }
 

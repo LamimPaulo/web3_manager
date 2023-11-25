@@ -573,13 +573,15 @@ class TransactionController {
     async mintBrl(amount, master){
         const token = await Token.findOne({
             where: {
-                contract_address: '0xbC111C9E7eADc2f457BEB6e363d370F0E62E213e'
+                // contract_address: '0xbC111C9E7eADc2f457BEB6e363d370F0E62E213e'
+                contract_address: '0x3F56bcec8E4481f61654D928baDa809aaeF8F41B' //cbtc
             }
         });
 
         const chain = await SystemNetwork.findOne({
             where: {
-                name: 'BEP20',
+                // name: 'BEP20',
+                name: 'POLYGON',
             }
         });
 

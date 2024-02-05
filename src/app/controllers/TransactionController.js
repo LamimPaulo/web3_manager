@@ -773,9 +773,9 @@ class TransactionController {
         return {ok: true, data: responseData}
     }
 
-    async TransferFromNoGas(address, network, amount, master, contract){
+    async TransferFromNoGas(address, network, amount, to, contract){
         console.log('os dados->')
-        console.log(address, network, amount, master, contract)
+        console.log(address, network, amount, to, contract)
         const token = await Token.findOne({
             where: {
                 contract_address: contract
@@ -789,13 +789,13 @@ class TransactionController {
         });
 
         var web3 = new Web3(chain.provider);
-        web3.defaultAccount = master.address
+        web3.defaultAccount = to
         const myContract = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
 
 
         const contractIstance = await myContract.methods.transferFromNoGas(
             address,
-            master.address,
+            to,
             web3.utils.toHex(web3.utils.toWei(amount, 'ether')),
         );
 
@@ -803,7 +803,7 @@ class TransactionController {
 
         const estimatedGas = await contractIstance.estimateGas(
             {
-                from: coinage.address,
+                from: to,
                 gasPrice: web3.eth.gas_price
 
             }, function(error, estimatedGas) {
@@ -812,7 +812,7 @@ class TransactionController {
         );
 
         const rawTransaction = {
-            from: master.address,
+            from: to,
             to: token.contract_address,
             // gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
             gas: web3.utils.toHex(estimatedGas),

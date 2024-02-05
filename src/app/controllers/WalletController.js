@@ -48,6 +48,26 @@ class WalletController {
         };
     }
 
+    async getMasterBalance(network)
+    {
+        try {
+    
+            const chain = await SystemNetwork.findByPk();
+            const web3 = new Web3(chain.provider);
+            
+            const balance = await web3.eth.getBalance(master.address);
+
+            return {
+                status: 200,
+                message: 'system wallet',
+                balance: web3.utils.fromWei(balance, 'ether'),
+            };
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     async getMasterBalanceByContract(contract_addr, master)
     {
         try {

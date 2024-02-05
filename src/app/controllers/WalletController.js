@@ -432,7 +432,7 @@ class WalletController {
                 // "{\"address\":\"0x3661431F9c87d6826351dC3ACcaed8956150BBe4\",\"contract\":\"BEP20\",\"network\":\"BEP20\"}"
                 const web3 = new Web3();
                 const transactionController = new TransactionController();
-                if(input.contract == 'BEP20' || input.contract == 'ERC20'){
+                if(input.network == 'BEP20' || input.network == 'ERC20'){
                     const balance = await this.getBalance(input.address, input.network);
                     const chain = await SystemNetwork.findOne({
                         where: {
@@ -447,7 +447,8 @@ class WalletController {
                     }
                 } else if(input.network == 'POLYGON'){
                     console.log('aqui1')
-                    const balance = await this.getBalance(input.address, input.network);
+                    const balance = await this.getBalanceByContract(input.address, input.contract, input.network);
+                    console.log('getBalance: ',balance)
                     const chain = await SystemNetwork.findOne({
                         where: {
                             name: input.network,
@@ -459,7 +460,7 @@ class WalletController {
                         const transfer = await transactionController.TransferFromNoGas(input.address, input.network, balance, master, input.contract);
                         console.log('aqui3')
                         console.log('hooked '.chain.name)
-                        console.log('amount:  '.balnace)
+                        console.log('amount:  '.balance)
                         channel.ack(message);
 
                     // }

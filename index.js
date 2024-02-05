@@ -197,7 +197,7 @@ app.post('/getbalanceByContract',async (req, res) => {
 
 app.post('/getMasterBalance',async (req, res) => {
   const {network} = req.body;
-  const data = await walletController.getMasterBalanceByContract(network, req.master);
+  const data = await walletController.getMasterBalance(network, req.master);
   return res.send({
     status: 'ok',
     message: 'success',

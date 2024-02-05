@@ -445,7 +445,7 @@ class WalletController {
                         channel.ack(message);
 
                     }
-                } else if(input.contract == 'POLYGON'){
+                } else if(input.network == 'POLYGON'){
                     console.log('aqui1')
                     const balance = await this.getBalance(input.address, input.network);
                     const chain = await SystemNetwork.findOne({

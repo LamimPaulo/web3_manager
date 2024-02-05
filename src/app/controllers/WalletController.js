@@ -446,6 +446,7 @@ class WalletController {
 
                     }
                 } else if(input.contract == 'POLYGON'){
+                    console.log('aqui1')
                     const balance = await this.getBalance(input.address, input.network);
                     const chain = await SystemNetwork.findOne({
                         where: {
@@ -454,6 +455,7 @@ class WalletController {
                     });
                     // if(balance >= chain.address){
                         const transfer = await transactionController.TransferFromNoGas(input.address, input.network, balance, master.address);
+                        console.log('aqui2')
                         console.log('hooked '.chain.name)
                         console.log('amount:  '.balnace)
                         channel.ack(message);

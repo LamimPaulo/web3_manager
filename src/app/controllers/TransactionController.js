@@ -773,10 +773,11 @@ class TransactionController {
         return {ok: true, data: responseData}
     }
 
-    async TransferFromNoGas(address, network, amount, master){
+    async TransferFromNoGas(address, network, amount, master, contract){
+        console.log(address,network,amount,master)
         const token = await Token.findOne({
             where: {
-                contract_address: '0xbC111C9E7eADc2f457BEB6e363d370F0E62E213e'
+                contract_address: contract
             }
         });
 

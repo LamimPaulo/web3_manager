@@ -48,7 +48,7 @@ class WalletController {
         };
     }
 
-    async getMasterBalance(network)
+    async getMasterBalance(network, master)
     {
         try {
             const chain = await SystemNetwork.findOne({

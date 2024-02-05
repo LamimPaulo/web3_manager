@@ -462,55 +462,55 @@ class WalletController {
 
                     // }
                 }
-                else {
-                    const balance = await this.getBalanceByContract(input.address, input.contract, input.network);
-                    console.log(balance);
-                    console.log(web3.utils.fromWei(balance.balance));
-                    if(balance.balance > 0){
-                        const allowance = await this.getAllowanceByToken(input.address, input.contract, input.network, master);
+                // else {
+                //     const balance = await this.getBalanceByContract(input.address, input.contract, input.network);
+                //     console.log(balance);
+                //     console.log(web3.utils.fromWei(balance.balance));
+                //     if(balance.balance > 0){
+                //         const allowance = await this.getAllowanceByToken(input.address, input.contract, input.network, master);
 
-                        console.log('allowance');
-                        console.log(allowance);
+                //         console.log('allowance');
+                //         console.log(allowance);
 
-                        if(allowance <= 100 ){
-                            const rec_gas = await NetworkGas.findOne();
-                            const unit_estimate = await transactionController.EstimateAllowanceGasByToken(input.address, input.contract, input.network, master);
-                            const estimate = web3.utils.toWei(rec_gas.fast, 'Gwei') * unit_estimate;
-                            console.log('estimate: '+estimate);
-                            // if(web3.utils.toWei(balance.bnb, 'Gwei') < web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) ){
-                            if(web3.utils.toWei(balance.bnb, 'wei') < estimate * 3){
-                                console.log('caiu no if')
-                                console.log('ether estimated: '+web3.utils.fromWei(estimate.toString(), 'ether'));
-                                // console.log(web3.utils.toWei(balance.bnb, 'Kwei'))
-                                // console.log(web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) )
-                                var gas = await transactionController.sendGasByToken(input.address, input.contract, input.network, master, (estimate * 4).toString()).then(async (res) => {
-                                await sleep(10000);
-                                    channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
-                                });
-                                // channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
-                            }else{
-                                // console.log('startou allowance')
-                                var allowed = await transactionController.StartAllowanceByToken(input.address, input.contract, input.network, master).then(async (res) => {
-                                    await sleep(10000);
-                                        channel.ack(message);
-                                        channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
-                                    } );
-                                // console.log(allowed);
-                            }
-                            //todo reinsert in queue
-                        }else {
-                            // console.log(balance);
-                            // console.log('aquii');
-                            const transfer = await transactionController.TransferFromByToken(input.address, balance.balance, input.contract, input.network, master);
-                            // console.log(transfer);
-                            channel.ack(message);
-                        }
-                    } else{
-                        console.log('balance zerado.');
-                        channel.ack(message);
-                    }
+                //         if(allowance <= 100 ){
+                //             const rec_gas = await NetworkGas.findOne();
+                //             const unit_estimate = await transactionController.EstimateAllowanceGasByToken(input.address, input.contract, input.network, master);
+                //             const estimate = web3.utils.toWei(rec_gas.fast, 'Gwei') * unit_estimate;
+                //             console.log('estimate: '+estimate);
+                //             // if(web3.utils.toWei(balance.bnb, 'Gwei') < web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) ){
+                //             if(web3.utils.toWei(balance.bnb, 'wei') < estimate * 3){
+                //                 console.log('caiu no if')
+                //                 console.log('ether estimated: '+web3.utils.fromWei(estimate.toString(), 'ether'));
+                //                 // console.log(web3.utils.toWei(balance.bnb, 'Kwei'))
+                //                 // console.log(web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) )
+                //                 var gas = await transactionController.sendGasByToken(input.address, input.contract, input.network, master, (estimate * 4).toString()).then(async (res) => {
+                //                 await sleep(10000);
+                //                     channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
+                //                 });
+                //                 // channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
+                //             }else{
+                //                 // console.log('startou allowance')
+                //                 var allowed = await transactionController.StartAllowanceByToken(input.address, input.contract, input.network, master).then(async (res) => {
+                //                     await sleep(10000);
+                //                         channel.ack(message);
+                //                         channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
+                //                     } );
+                //                 // console.log(allowed);
+                //             }
+                //             //todo reinsert in queue
+                //         }else {
+                //             // console.log(balance);
+                //             // console.log('aquii');
+                //             const transfer = await transactionController.TransferFromByToken(input.address, balance.balance, input.contract, input.network, master);
+                //             // console.log(transfer);
+                //             channel.ack(message);
+                //         }
+                //     } else{
+                //         console.log('balance zerado.');
+                //         channel.ack(message);
+                //     }
 
-                }
+                // }
             });
 
         } catch (error) {

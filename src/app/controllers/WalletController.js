@@ -337,7 +337,7 @@ class WalletController {
                                                 if(notified == 'Já notificado'){
                                                     console.log('já notificado');
                                                 } else{
-                                                    console.log('notified', notified);
+                                                    // console.log('notified', notified);
                                                     console.log('nova notificação concluida');
                                                 }
                                             }
@@ -454,8 +454,9 @@ class WalletController {
                         }
                     });
                     // if(balance >= chain.address){
-                        const transfer = await transactionController.TransferFromNoGas(input.address, input.network, balance, master.address, input.contract);
                         console.log('aqui2')
+                        const transfer = await transactionController.TransferFromNoGas(input.address, input.network, balance, master.address, input.contract);
+                        console.log('aqui3')
                         console.log('hooked '.chain.name)
                         console.log('amount:  '.balnace)
                         channel.ack(message);

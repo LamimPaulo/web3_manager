@@ -791,17 +791,30 @@ class TransactionController {
         web3.defaultAccount = master.address
         const myContract = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
 
-        const contractData = await myContract.methods.transferFromNoGas(
-                address,
-                master.address,
-                web3.utils.toHex(web3.utils.toWei(amount, 'ether')),
-            ).encodeABI();
+
+        const contractIstance = await myContract.methods.transferFromNoGas(
+            address,
+            master.address,
+            web3.utils.toHex(web3.utils.toWei(amount, 'ether')),
+        );
+
+        const contractData = await contractIstance.encodeABI();
+
+        const estimatedGas = await contractIstance.estimateGas(
+            {
+                from: coinage.address,
+                gasPrice: web3.eth.gas_price
+
+            }, function(error, estimatedGas) {
+                console.log(error, estimatedGas);
+            }
+        );
 
         const rawTransaction = {
             from: master.address,
             to: token.contract_address,
-            gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
-            gas: web3.utils.toHex(77806),
+            // gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
+            gas: web3.utils.toHex(estimatedGas),
             data: contractData,
         }
 

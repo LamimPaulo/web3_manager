@@ -127,8 +127,8 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   }));
 
 app.get('/test', async (req, res) => {
-  return res.send(walletController.checkReceivedTransactionsByToken());
-  // return await res.send(walletController.checkBalanceHookToMaster());
+  // return res.send(walletController.checkReceivedTransactionsByToken());
+  return await res.send(walletController.checkBalanceHookToMaster());
   // return await res.send(gasController.syncGas());
 });
 

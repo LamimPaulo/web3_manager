@@ -51,8 +51,12 @@ class WalletController {
     async getMasterBalance(network)
     {
         try {
-    
-            const chain = await SystemNetwork.findByPk();
+            const chain = await SystemNetwork.findOne({
+                where: {
+                    name: network,
+                }
+            });
+            
             const web3 = new Web3(chain.provider);
             
             const balance = await web3.eth.getBalance(master.address);

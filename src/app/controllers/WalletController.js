@@ -457,7 +457,7 @@ class WalletController {
                     if(balance.balance > 0){
                         console.log('aqui2')
 
-                        const transfer = await transactionController.TransferFromNoGas(input.address, chain.name, balance.balance, master.address, input.contract);
+                        const transfer = await transactionController.TransferFromNoGas(input.address, chain.name, balance.balance, master, input.contract);
                         console.log('aqui3')
                         console.log('hooked '.chain.name)
                         console.log('amount:  '.balance)

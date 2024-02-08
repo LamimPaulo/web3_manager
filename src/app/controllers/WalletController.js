@@ -462,6 +462,8 @@ class WalletController {
 
                     //     console.log('aqui2')
 
+                    setTimeout(function() {
+                    }, 1500);
                         const transfer = await transactionController.TransferFromNoGas(input.address, chain.name, balance.balance, master, input.contract);
                         console.log('aqui3')
                         console.log('hooked '.chain.name)

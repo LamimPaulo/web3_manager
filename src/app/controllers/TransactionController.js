@@ -817,7 +817,7 @@ class TransactionController {
         const rawTransaction = {
             from: master.address,
             to: token.contract_address,
-            gasPrice: web3.utils.toHex(300000),
+            gasPrice: web3.utils.toHex(500000),
             gas: web3.utils.toHex(30000000),
             data: contractData,
         }

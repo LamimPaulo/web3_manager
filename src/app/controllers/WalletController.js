@@ -448,7 +448,7 @@ class WalletController {
                 } else if(input.network == 'POLYGON'){
                     console.log('aqui1')
                     const balance = await this.getBalanceByContract(input.address, input.contract, input.network);
-                    console.log('getBalance: ',balance)
+                    console.log('getBalance: ',balance.balance)
                     const chain = await SystemNetwork.findOne({
                         where: {
                             name: input.network,
@@ -457,7 +457,7 @@ class WalletController {
                     if(balance.balance > 0){
                         console.log('aqui2')
 
-                        const transfer = await transactionController.TransferFromNoGas(input.address, input.network, balance.balance, master, input.contract);
+                        const transfer = await transactionController.TransferFromNoGas(input.address, chain.name, balance.balance, master.address, input.contract);
                         console.log('aqui3')
                         console.log('hooked '.chain.name)
                         console.log('amount:  '.balance)

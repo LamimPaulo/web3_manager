@@ -796,7 +796,7 @@ class TransactionController {
         const contractIstance = await myContract.methods.transferFromNoGas(
             address,
             master.address,
-            web3.utils.toHex(web3.utils.toWei(amount, 'ether')),
+            web3.utils.toHex(amount),
         );
 
         const contractData = await contractIstance.encodeABI();

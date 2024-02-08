@@ -151,6 +151,18 @@ class WalletController {
             throw new Error('invalid token!')
         }
 
+        if(!master){
+            const u_wallet = await Wallet.findOne(
+                        {
+                            where: {
+                                address: address
+                            }
+                        }
+                    );
+
+            master = SystemWallet.findByPk(u_wallet.system_wallet_id);
+        }
+
         const chain = await SystemNetwork.findByPk(token.network_id);
         const web3 = new Web3(chain.provider);
 

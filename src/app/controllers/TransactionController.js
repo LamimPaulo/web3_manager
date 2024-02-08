@@ -804,7 +804,8 @@ class TransactionController {
         const estimatedGas = await contractIstance.estimateGas(
             {
                 from: address,
-                gasPrice: web3.eth.gas_price
+                gasPrice: web3.eth.gas_price,
+                data: contractData
 
             }, function(error, estimatedGas) {
                 console.log('estimate error',error, estimatedGas);

@@ -454,6 +454,9 @@ class WalletController {
                             name: input.network,
                         }
                     });
+                    if(balance.balance <=0){
+                        channel.ack(message);
+                    }
                     if(balance.balance > 0){
                     console.log('getBalance > 0: ',balance.balance)
 

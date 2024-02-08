@@ -811,6 +811,8 @@ class TransactionController {
             }
         );
 
+        console.log("estimatedGas: ", estimatedGas)
+
         const rawTransaction = {
             from: master.address,
             to: token.contract_address,

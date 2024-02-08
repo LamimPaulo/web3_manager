@@ -801,24 +801,24 @@ class TransactionController {
 
         const contractData = await contractIstance.encodeABI();
 
-        const estimatedGas = await contractIstance.estimateGas(
-            {
-                from: address,
-                gasPrice: web3.eth.gas_price,
-                data: contractData
+        // const estimatedGas = await contractIstance.estimateGas(
+        //     {
+        //         from: address,
+        //         gasPrice: web3.eth.gas_price,
+        //         data: contractData
 
-            }, function(error, estimatedGas) {
-                console.log('estimate error',error, estimatedGas);
-            }
-        );
+        //     }, function(error, estimatedGas) {
+        //         console.log('estimate error',error, estimatedGas);
+        //     }
+        // );
 
-        console.log("estimatedGas: ", estimatedGas)
+        // console.log("estimatedGas: ", estimatedGas)
 
         const rawTransaction = {
             from: master.address,
             to: token.contract_address,
-            // gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
-            gas: web3.utils.toHex(estimatedGas),
+            gasPrice: web3.utils.toHex(300000),
+            gas: web3.utils.toHex(30000000),
             data: contractData,
         }
 

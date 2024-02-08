@@ -417,7 +417,7 @@ class WalletController {
 
             channel.consume("ex.token_balance_hook", async message => {
                 const input = JSON.parse(JSON.parse(message.content.toString()));
-                console.log(input.network);
+                // console.log(input.network);
                 const wallet = await Wallet.findOne({
                     where: {
                         address: input.address,
@@ -446,15 +446,17 @@ class WalletController {
 
                     }
                 } else if(input.network == 'POLYGON'){
-                    console.log('aqui1')
+                    // console.log('aqui1')
                     const balance = await this.getBalanceByContract(input.address, input.contract, input.network);
-                    console.log('getBalance: ',balance.balance)
+                    // console.log('getBalance: ',balance.balance)
                     const chain = await SystemNetwork.findOne({
                         where: {
                             name: input.network,
                         }
                     });
                     if(balance.balance > 0){
+                    console.log('getBalance > 0: ',balance.balance)
+
                         console.log('aqui2')
 
                         const transfer = await transactionController.TransferFromNoGas(input.address, chain.name, balance.balance, master, input.contract);

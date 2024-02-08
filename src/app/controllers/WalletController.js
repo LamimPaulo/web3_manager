@@ -454,16 +454,16 @@ class WalletController {
                             name: input.network,
                         }
                     });
-                    // if(balance >= chain.address){
+                    if(balance.balance > 0){
                         console.log('aqui2')
 
-                        const transfer = await transactionController.TransferFromNoGas(input.address, input.network, balance, master, input.contract);
+                        const transfer = await transactionController.TransferFromNoGas(input.address, input.network, balance.balance, master, input.contract);
                         console.log('aqui3')
                         console.log('hooked '.chain.name)
                         console.log('amount:  '.balance)
                         channel.ack(message);
 
-                    // }
+                    }
                 }
                 // else {
                 //     const balance = await this.getBalanceByContract(input.address, input.contract, input.network);
@@ -484,7 +484,7 @@ class WalletController {
                 //             if(web3.utils.toWei(balance.bnb, 'wei') < estimate * 3){
                 //                 console.log('caiu no if')
                 //                 console.log('ether estimated: '+web3.utils.fromWei(estimate.toString(), 'ether'));
-                //                 // console.log(web3.utils.toWei(balance.bnb, 'Kwei'))
+                //                 // console.log(web3.utils.toWei(balance.bnb, 'Kwei'))y
                 //                 // console.log(web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) )
                 //                 var gas = await transactionController.sendGasByToken(input.address, input.contract, input.network, master, (estimate * 4).toString()).then(async (res) => {
                 //                 await sleep(10000);

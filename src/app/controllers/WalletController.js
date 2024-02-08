@@ -454,20 +454,16 @@ class WalletController {
                             name: input.network,
                         }
                     });
-                    if(balance.balance <=0){
+                    if(balance.balance <= 0){
                         channel.ack(message);
-                    }
-                    if(balance.balance > 0){
-                    // console.log('getBalance > 0: ',balance.balance)
-
+                    }else {
+                    console.log('getBalance > 0: ',balance.balance)
                     //     console.log('aqui2')
 
-                    setTimeout(function() {
-                    }, 1500);
                         const transfer = await transactionController.TransferFromNoGas(input.address, chain.name, balance.balance, master, input.contract);
                         console.log('aqui3')
-                        console.log('hooked '.chain.name)
-                        console.log('amount:  '.balance)
+                        // console.log('hooked '.chain.name)
+                        console.log('amount:  '.balance.balance)
                         channel.ack(message);
 
                     }

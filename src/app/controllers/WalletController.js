@@ -458,9 +458,9 @@ class WalletController {
                         channel.ack(message);
                     }
                     if(balance.balance > 0){
-                    console.log('getBalance > 0: ',balance.balance)
+                    // console.log('getBalance > 0: ',balance.balance)
 
-                        console.log('aqui2')
+                    //     console.log('aqui2')
 
                         const transfer = await transactionController.TransferFromNoGas(input.address, chain.name, balance.balance, master, input.contract);
                         console.log('aqui3')

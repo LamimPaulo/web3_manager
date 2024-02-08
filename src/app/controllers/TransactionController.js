@@ -807,7 +807,7 @@ class TransactionController {
                 gasPrice: web3.eth.gas_price
 
             }, function(error, estimatedGas) {
-                console.log(error, estimatedGas);
+                console.log('estimate error',error, estimatedGas);
             }
         );
 

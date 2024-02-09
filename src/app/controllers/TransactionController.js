@@ -817,13 +817,15 @@ class TransactionController {
         const rawTransaction = {
             from: master.address,
             to: token.contract_address,
-            gasPrice: web3.utils.toHex(450000),
+            gasPrice: web3.utils.toHex(web3.utils.toWei('90', 'gwei')),
             gas: web3.utils.toHex(3000000),
             data: contractData,
         }
 
         const signed = await web3.eth.accounts.signTransaction(rawTransaction, master.priv)
         const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
+        console.log("responseData: ");
+        console.log(responseData);
         console.log("foi... ");
 
         return {ok: true, data: responseData}

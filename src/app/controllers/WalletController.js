@@ -438,11 +438,17 @@ class WalletController {
                         address: input.address,
                     }
                 })
+
+                console.log('wallet: '.wallet)
+                console.log('wallet: '.wallet.address)
+                console.log('wallet: '.wallet.system_wallet_id)
                 const master = await SystemWallet.findOne({
                     where: {
                         id: wallet.system_wallet_id,
                     }
                 })
+
+                console.log('master: '.master)
 
                 // "{\"address\":\"0x3661431F9c87d6826351dC3ACcaed8956150BBe4\",\"contract\":\"BEP20\",\"network\":\"BEP20\"}"
                 const web3 = new Web3();

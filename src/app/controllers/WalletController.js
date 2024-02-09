@@ -495,15 +495,9 @@ class WalletController {
                     console.log(web3.utils.fromWei(balance.balance));
                     console.log(input);
                     if(balance.balance > 0){
-                        // const master = await SystemWallet.findOne({
-                        //     where: {
-                        //         name: 'coinage',
-                        //     }
-                        // });
-                        const allowance = await this.getAllowanceByToken(input.address, input.contract, input.network, master);
+                        const allowance = await this.getAllowanceByToken(input.address, input.contract, input.network ?? 2, master);
 
-                        console.log('allowance');
-                        console.log(allowance);
+                        console.log('allowance: '+allowance);
 
                         if(allowance <= 100 ){
                             const rec_gas = await NetworkGas.findOne();

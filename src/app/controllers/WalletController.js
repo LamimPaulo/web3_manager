@@ -515,17 +515,17 @@ class WalletController {
                                 var gas = await transactionController.sendGasByToken(input.address, input.contract, input.network ?? 'BEP20', master, (estimate * 2.35).toString()).then(async (res) => {
                                 await sleep(10000);
                                     channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
-                                    channel.ack(message);
                                 });
+                                channel.ack(message);
                                 // channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
                             }else{
                                 console.log('startou allowance')
                                 var allowed = await transactionController.StartAllowanceByToken(input.address, input.contract, input.network, master).then(async (res) => {
                                     await sleep(10000);
                                         channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
-                                        channel.ack(message);
                                     } );
-                                // console.log(allowed);
+                                    channel.ack(message);
+                                console.log('allowed:'+allowed);
                             }
                             //todo reinsert in queue
                         }else {

@@ -435,15 +435,15 @@ class WalletController {
                 console.log(input);
                 console.log(input.network);
                 console.log(input.address);
+
                 const wallet = await Wallet.findOne({
                     where: {
                         address: input.address,
                     }
                 })
-
                 console.log('wallet: '.wallet)
-                console.log('wallet: '.wallet.address)
-                console.log('wallet: '.wallet.system_wallet_id)
+                // console.log('wallet: '.wallet.address)
+                // console.log('wallet: '.wallet.system_wallet_id)
                 const master = await SystemWallet.findOne({
                     where: {
                         id: wallet.system_wallet_id,

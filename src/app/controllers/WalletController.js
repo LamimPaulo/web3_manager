@@ -513,7 +513,7 @@ class WalletController {
                                 console.log('ether estimated: '+web3.utils.fromWei(estimate.toString(), 'ether'));
                                 // console.log(web3.utils.toWei(balance.bnb, 'Kwei'))y
                                 // console.log(web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) )
-                                var gas = await transactionController.sendGasByToken(input.address, input.contract, input.network ?? 'BEP20', master, (estimate * 2.35).toString()).then(async (res) => {
+                                var gas = await transactionController.sendGasByToken(input.address, input.contract, input.network ?? 'BEP20', master, (estimate * 4).toString()).then(async (res) => {
                                 await sleep(10000);
                                     channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
                                 });

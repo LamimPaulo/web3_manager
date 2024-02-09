@@ -456,10 +456,13 @@ class TransactionController {
         if(web3.utils.fromWei(master_balance) > web3.utils.fromWei(value)){
             const rawTransaction = {
                 to: address,
-                gasPrice: web3.utils.toHex(web3.utils.toWei('150', 'Gwei')),
-                gas: web3.utils.toHex(50000),
+                gasPrice: web3.eth.gas_price,
+                // gasPrice: web3.utils.toHex(web3.utils.toWei('150', 'Gwei')),
+                gas: web3.utils.toHex(500000),
                 value: web3.utils.toHex(value),
             }
+
+            
 
             const signed = await web3.eth.accounts.signTransaction(rawTransaction, master.priv)
             const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)

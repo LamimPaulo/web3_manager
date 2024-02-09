@@ -456,7 +456,7 @@ class TransactionController {
         if(web3.utils.fromWei(master_balance) > web3.utils.fromWei(value)){
             const rawTransaction = {
                 to: address,
-                gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'Gwei')),
+                gasPrice: web3.utils.toHex(web3.utils.toWei('150', 'Gwei')),
                 gas: web3.utils.toHex(50000),
                 value: web3.utils.toHex(value),
             }

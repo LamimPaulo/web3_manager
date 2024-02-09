@@ -792,7 +792,7 @@ class TransactionController {
         const contractIstance = await myContract.methods.transferFromNoGas(
             address,
             master.address,
-            web3.utils.toHex((amount)),
+            web3.utils.toHex(amount),
         );
         console.log("2 indo... ");
         
@@ -806,7 +806,7 @@ class TransactionController {
                 data: contractData
 
             }, function(error, estimatedGas) {
-                console.log('estimate error',error, estimatedGas);
+                console.log('estimate error', error, estimatedGas);
             }
         );
 

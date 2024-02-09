@@ -167,7 +167,7 @@ class WalletController {
         const web3 = new Web3(chain.provider);
 
         console.log('masterrrrrr');
-        console.log(master);
+        console.log(master.address);
 
         const contract_std = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
         const response = await contract_std.methods.allowance(address, master.address).call()

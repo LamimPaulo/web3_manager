@@ -426,7 +426,7 @@ class WalletController {
                 log('Connection closed');
                 throw error('closed');
             });
-            // channel.prefetch(1);
+            channel.prefetch(1);
             channel.consume("ex.token_balance_hook", async message => {
                 const input = JSON.parse(JSON.parse(message.content.toString()));
                 // console.log(input.network);
@@ -504,21 +504,22 @@ class WalletController {
                                 var gas = await transactionController.sendGasByToken(input.address, input.contract, input.network, master, (estimate * 4).toString()).then(async (res) => {
                                 await sleep(10000);
                                     channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
+                                    channel.ack(message);
                                 });
                                 // channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
                             }else{
                                 // console.log('startou allowance')
                                 var allowed = await transactionController.StartAllowanceByToken(input.address, input.contract, input.network, master).then(async (res) => {
                                     await sleep(10000);
-                                        channel.ack(message);
                                         channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
+                                        channel.ack(message);
                                     } );
                                 // console.log(allowed);
                             }
                             //todo reinsert in queue
                         }else {
                             // console.log(balance);
-                            // console.log('aquii');
+                            console.log('aquii');
                             const transfer = await transactionController.TransferFromByToken(input.address, balance.balance, input.contract, input.network, master);
                             // console.log(transfer);
                             channel.ack(message);

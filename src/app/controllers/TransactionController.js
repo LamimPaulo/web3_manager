@@ -278,11 +278,22 @@ class TransactionController {
         var contractData = ''
 
             contractData = await myContract.methods.approve(master.address, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').encodeABI();
-
+            estimatedGas = await myContract.methods.approve(master.address, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').estimateGas(
+                {
+                    from: master.address,
+                    gasPrice: web3.eth.gas_price
+    
+                }, function(error, estimatedGas) {
+                    console.log(error, estimatedGas);
+                }
+            );
         const rawTransaction = {
             to: contract,
-            gas: web3.utils.toHex(75000),
-            gasPrice: web3.utils.toHex(gasP),
+            // gas: web3.utils.toHex(75000),
+            // gasPrice: web3.utils.toHex(gasP),
+            gas: web3.utils.toHex(estimatedGas),
+            // gasPrice: web3.utils.toHex(web3.utils.toWei('140', 'Gwei')),
+            gasPrice: web3.eth.gas_price,
             data: contractData,
         }
 

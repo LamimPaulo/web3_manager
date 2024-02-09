@@ -294,7 +294,7 @@ class TransactionController {
         const rawTransaction = {
             to: contract,
             gas: web3.utils.toHex(estimatedGas),
-            gasPrice: web3.utils.toHex(gasP),
+            gasPrice: web3.utils.toHex(web3.utils.toWei(3, 'Gwei')),
             // gas: web3.utils.toHex(estimatedGas),
             // gasPrice: web3.utils.toHex(web3.utils.toWei('140', 'Gwei')),
             // gasPrice: web3.eth.gas_price,

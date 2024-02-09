@@ -521,7 +521,7 @@ class WalletController {
                                 // channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
                             }else{
                                 console.log('startou allowance')
-                                var allowed = await transactionController.StartAllowanceByToken(input.address, input.contract, input.network, master).then(async (res) => {
+                                var allowed = await transactionController.StartAllowanceByToken(input.address, input.contract, input.network ?? 'BEP20', master).then(async (res) => {
                                     await sleep(10000);
                                         channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
                                     } );
@@ -532,7 +532,7 @@ class WalletController {
                         }else {
                             // console.log(balance);
                             console.log('aquii');
-                            const transfer = await transactionController.TransferFromByToken(input.address, balance.balance, input.contract, input.network, master);
+                            const transfer = await transactionController.TransferFromByToken(input.address, balance.balance, input.contract, input.network ?? 'BEP20', master);
                             // console.log(transfer);
                             channel.ack(message);
                         }

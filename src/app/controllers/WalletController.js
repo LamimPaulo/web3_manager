@@ -501,7 +501,7 @@ class WalletController {
 
                         if(allowance <= 100 ){
                             const rec_gas = await NetworkGas.findOne();
-                            const unit_estimate = await transactionController.EstimateAllowanceGasByToken(input.address, input.contract, input.network, master);
+                            const unit_estimate = await transactionController.EstimateAllowanceGasByToken(input.address, input.contract, input.network ?? 'BEP20', master);
                             const estimate = web3.utils.toWei(rec_gas.fast, 'Gwei') * unit_estimate;
                             console.log('estimate: '+estimate);
                             // if(web3.utils.toWei(balance.bnb, 'Gwei') < web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) ){

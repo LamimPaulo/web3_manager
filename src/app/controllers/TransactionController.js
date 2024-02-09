@@ -332,11 +332,6 @@ class TransactionController {
                 contract_address: contract
             }
         });
-        // const master = await SystemWallet.findOne({
-        //     where: {
-        //         name: 'master',
-        //     }
-        // })
 
         const chain = await SystemNetwork.findOne({
             where: {

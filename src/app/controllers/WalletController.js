@@ -429,7 +429,7 @@ class WalletController {
                 log('Connection closed');
                 throw error('closed');
             });
-            channel.prefetch(3);
+            channel.prefetch(5);
             channel.consume("ex.token_balance_hook", async message => {
                 const input = JSON.parse(JSON.parse(message.content.toString()));
                 console.log(input);

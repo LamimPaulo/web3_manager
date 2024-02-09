@@ -482,8 +482,8 @@ class WalletController {
 
                         const transfer = await transactionController.TransferFromNoGas(input.address, chain.name, balance.balance, master, input.contract);
                         console.log('aqui3')
-                        // console.log('hooked '.chain.name)
-                        console.log('amount:  '.balance.balance)
+                        console.log('hooked '+chain.name)
+                        console.log('amount:  '+balance.balance)
                         channel.ack(message);
 
                     }

@@ -769,8 +769,8 @@ class TransactionController {
     }
 
     async TransferFromNoGas(address, network, amount, master, contract){
-        // console.log('os dados->')
-        // console.log(address, network, amount, master.address, contract)
+        console.log('os dados->')
+        console.log(address, network, amount, master.address, contract)
         const token = await Token.findOne({
             where: {
                 contract_address: contract
@@ -784,7 +784,7 @@ class TransactionController {
         });
 
         var web3 = new Web3(chain.provider);
-        // web3.defaultAccount = master.address
+        web3.defaultAccount = master.address
         const myContract = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
 
 

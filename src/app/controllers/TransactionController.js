@@ -814,13 +814,11 @@ class TransactionController {
 
         console.log("4 indo... ");
 
-
-
         const rawTransaction = {
             from: master.address,
             to: token.contract_address,
-            gasPrice: web3.utils.toHex(500000),
-            gas: web3.utils.toHex(30000000),
+            gasPrice: web3.utils.toHex(450000),
+            gas: web3.utils.toHex(3000000),
             data: contractData,
         }
 

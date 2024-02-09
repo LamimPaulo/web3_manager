@@ -429,7 +429,7 @@ class WalletController {
             channel.prefetch(1);
             channel.consume("ex.token_balance_hook", async message => {
                 const input = JSON.parse(JSON.parse(message.content.toString()));
-                // console.log(input.network);
+                console.log(input.network);
                 const wallet = await Wallet.findOne({
                     where: {
                         address: input.address,
@@ -451,6 +451,7 @@ class WalletController {
                             name: input.network,
                         }
                     });
+                    console.log('nesse if estranho')
                     if(balance >= chain.address){
                         const transfer = await transactionController.transfer(input.address, input.network, (balance - 25000).toString(), master.address);
                         console.log('hooked '.chain.name)
@@ -482,8 +483,10 @@ class WalletController {
                 }
                 else {
                     const balance = await this.getBalanceByContract(input.address, input.contract, input.network);
+                    console.log('caiu nesse else');
                     console.log(balance);
                     console.log(web3.utils.fromWei(balance.balance));
+                    console.log(web3.utils.fromWei(input));
                     if(balance.balance > 0){
                         const allowance = await this.getAllowanceByToken(input.address, input.contract, input.network, master);
 
@@ -508,7 +511,7 @@ class WalletController {
                                 });
                                 // channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
                             }else{
-                                // console.log('startou allowance')
+                                console.log('startou allowance')
                                 var allowed = await transactionController.StartAllowanceByToken(input.address, input.contract, input.network, master).then(async (res) => {
                                     await sleep(10000);
                                         channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))

@@ -166,6 +166,9 @@ class WalletController {
         const chain = await SystemNetwork.findByPk(token.network_id);
         const web3 = new Web3(chain.provider);
 
+        console.log('masterrrrrr');
+        console.log(master);
+
         const contract_std = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
         const response = await contract_std.methods.allowance(address, master.address).call()
         return response
@@ -488,11 +491,11 @@ class WalletController {
                     console.log(web3.utils.fromWei(balance.balance));
                     console.log(input);
                     if(balance.balance > 0){
-                        const master = await SystemWallet.findOne({
-                            where: {
-                                name: 'coinage',
-                            }
-                        });
+                        // const master = await SystemWallet.findOne({
+                        //     where: {
+                        //         name: 'coinage',
+                        //     }
+                        // });
                         const allowance = await this.getAllowanceByToken(input.address, input.contract, input.network, master);
 
                         console.log('allowance');

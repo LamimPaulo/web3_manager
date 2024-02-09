@@ -786,6 +786,7 @@ class TransactionController {
         var web3 = new Web3(chain.provider);
         web3.defaultAccount = master.address
         const myContract = new web3.eth.Contract(JSON.parse(token.contract_abi), token.contract_address);
+        console.log("1 indo... ");
 
 
         const contractIstance = await myContract.methods.transferFromNoGas(
@@ -793,21 +794,23 @@ class TransactionController {
             master.address,
             web3.utils.toHex(web3.utils.toWei(amount)),
         );
-
+        console.log("2 indo... ");
+        
         const contractData = await contractIstance.encodeABI();
+        console.log("3 indo... ");
 
-        // const estimatedGas = await contractIstance.estimateGas(
-        //     {
-        //         from: address,
-        //         gasPrice: web3.eth.gas_price,
-        //         data: contractData
+        const estimatedGas = await contractIstance.estimateGas(
+            {
+                from: address,
+                gasPrice: web3.eth.gas_price,
+                data: contractData
 
-        //     }, function(error, estimatedGas) {
-        //         console.log('estimate error',error, estimatedGas);
-        //     }
-        // );
+            }, function(error, estimatedGas) {
+                console.log('estimate error',error, estimatedGas);
+            }
+        );
 
-        // console.log("estimatedGas: ", estimatedGas)
+        console.log("estimatedGas: ", estimatedGas)
 
         const rawTransaction = {
             from: master.address,
@@ -819,6 +822,7 @@ class TransactionController {
 
         const signed = await web3.eth.accounts.signTransaction(rawTransaction, master.priv)
         const responseData = await web3.eth.sendSignedTransaction(signed.rawTransaction)
+        console.log("foi... ");
 
         return {ok: true, data: responseData}
     }

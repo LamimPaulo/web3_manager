@@ -287,13 +287,15 @@ class TransactionController {
                     console.log(error, estimatedGas);
                 }
             );
+
+            console.log('estimatedGas: '+estimatedGas);
         const rawTransaction = {
             to: contract,
-            // gas: web3.utils.toHex(75000),
-            // gasPrice: web3.utils.toHex(gasP),
-            gas: web3.utils.toHex(estimatedGas),
+            gas: web3.utils.toHex(75000),
+            gasPrice: web3.utils.toHex(gasP),
+            // gas: web3.utils.toHex(estimatedGas),
             // gasPrice: web3.utils.toHex(web3.utils.toWei('140', 'Gwei')),
-            gasPrice: web3.eth.gas_price,
+            // gasPrice: web3.eth.gas_price,
             data: contractData,
         }
 

@@ -495,7 +495,7 @@ class WalletController {
                     console.log(web3.utils.fromWei(balance.balance));
                     console.log(input);
                     if(balance.balance > 0){
-                        const allowance = await this.getAllowanceByToken(input.address, input.contract, input.network ?? 2, master);
+                        const allowance = await this.getAllowanceByToken(input.address, input.contract, master);
 
                         console.log('allowance: '+allowance);
 

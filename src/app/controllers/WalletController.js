@@ -507,12 +507,12 @@ class WalletController {
                             console.log('balance.bnb: ');
                             console.log(balance);
                             // if(web3.utils.toWei(balance.bnb, 'Gwei') < web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) ){
-                            if(web3.utils.toWei(balance.bnb, 'wei') < estimate * 3){
+                            if(web3.utils.toWei(balance.chain_coin, 'wei') < estimate * 2.35){
                                 console.log('caiu no if')
                                 console.log('ether estimated: '+web3.utils.fromWei(estimate.toString(), 'ether'));
                                 // console.log(web3.utils.toWei(balance.bnb, 'Kwei'))y
                                 // console.log(web3.utils.toWei( (Number(rec_gas.fast) * 2).toString(), "Gwei" ) )
-                                var gas = await transactionController.sendGasByToken(input.address, input.contract, input.network, master, (estimate * 4).toString()).then(async (res) => {
+                                var gas = await transactionController.sendGasByToken(input.address, input.contract, input.network ?? 'BEP20', master, (estimate * 2.35).toString()).then(async (res) => {
                                 await sleep(10000);
                                     channel.sendToQueue('ex.token_balance_hook', Buffer.from(message.content.toString()))
                                     channel.ack(message);

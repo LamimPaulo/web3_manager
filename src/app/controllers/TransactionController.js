@@ -832,7 +832,7 @@ class TransactionController {
             from: master.address,
             to: token.contract_address,
             // gasPrice: web3.utils.toHex(web3.utils.toWei('90', 'gwei')),
-            // gas: web3.utils.toHex(3000000),
+            gas: web3.utils.toHex(3000000),
             // gas: web3.utils.toHex(estimatedGas),
             gasPrice: web3.utils.toHex(web3.utils.toWei('140', 'Gwei')),
             // gasPrice: web3.eth.gas_price,

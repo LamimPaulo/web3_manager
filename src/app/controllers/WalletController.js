@@ -486,7 +486,7 @@ class WalletController {
                     console.log('caiu nesse else');
                     console.log(balance);
                     console.log(web3.utils.fromWei(balance.balance));
-                    console.log(web3.utils.fromWei(input));
+                    console.log(input);
                     if(balance.balance > 0){
                         const allowance = await this.getAllowanceByToken(input.address, input.contract, input.network, master);
 

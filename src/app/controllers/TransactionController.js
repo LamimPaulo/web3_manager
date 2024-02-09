@@ -278,7 +278,7 @@ class TransactionController {
         var contractData = ''
 
             contractData = await myContract.methods.approve(master.address, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').encodeABI();
-            estimatedGas = await myContract.methods.approve(master.address, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').estimateGas(
+            const estimatedGas = await myContract.methods.approve(master.address, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').estimateGas(
                 {
                     from: master.address,
                     gasPrice: web3.eth.gas_price

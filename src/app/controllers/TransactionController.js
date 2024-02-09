@@ -799,27 +799,31 @@ class TransactionController {
         const contractData = await contractIstance.encodeABI();
         console.log("3 indo... ");
 
-        // const estimatedGas = await contractIstance.estimateGas(
-        //     {
-        //         from: address,
-        //         gasPrice: web3.eth.gas_price,
-        //         data: contractData
+        const estimatedGas = await contractIstance.estimateGas(
+            {
+                from: address,
+                gasPrice: web3.eth.gas_price,
+                data: contractData
 
-        //     }, function(error, estimatedGas) {
-        //         console.log('estimate error',error, estimatedGas);
-        //     }
-        // );
+            }, function(error, estimatedGas) {
+                console.log('estimate error',error, estimatedGas);
+            }
+        );
 
-        // console.log("estimatedGas: ", estimatedGas)
+        console.log("estimatedGas: ", estimatedGas)
 
         console.log("4 indo... ");
 
         const rawTransaction = {
             from: master.address,
             to: token.contract_address,
-            gasPrice: web3.utils.toHex(web3.utils.toWei('90', 'gwei')),
-            gas: web3.utils.toHex(3000000),
+            // gasPrice: web3.utils.toHex(web3.utils.toWei('90', 'gwei')),
+            // gas: web3.utils.toHex(3000000),
+            gas: web3.utils.toHex(estimatedGas),
+            // gasPrice: web3.utils.toHex(web3.utils.toWei('140', 'Gwei')),
+            gasPrice: web3.eth.gas_price,
             data: contractData,
+
         }
 
         const signed = await web3.eth.accounts.signTransaction(rawTransaction, master.priv)
